@@ -31,7 +31,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isExpanded, setIsExpanded }) => {
   };
 
   const links = [
-    { to: '/admin', icon: <MdDashboard />, text: 'Dashboard' },
+    { to: '/admin/dashboard', icon: <MdDashboard />, text: 'Dashboard' },
     { to: '/admin/orders', icon: <MdShoppingCart />, text: 'Pedidos' },
     { to: '/admin/tags', icon: <MdLabel />, text: 'Tags' },
     { to: '/admin/categories', icon: <MdCategory />, text: 'Categorias' },

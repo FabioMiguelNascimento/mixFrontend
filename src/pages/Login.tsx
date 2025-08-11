@@ -14,7 +14,7 @@ const Login: React.FC = () => {
     if (isAuthenticated && user) {
       const adminRoles = [UserRole.ADMIN, UserRole.MANAGER, UserRole.SELLER];
       if (adminRoles.includes(user.role)) {
-        navigate('/admin', { replace: true });
+        navigate('/admin/dashboard', { replace: true });
       } else {
         navigate('/', { replace: true });
       }

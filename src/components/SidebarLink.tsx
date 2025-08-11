@@ -1,6 +1,6 @@
 import React from 'react';
 import type { LinkProps } from 'react-router-dom';
-import { Link } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 
 interface SidebarLinkProps extends LinkProps {
   icon: React.ReactNode;
@@ -9,10 +9,14 @@ interface SidebarLinkProps extends LinkProps {
 
 const SidebarLink: React.FC<SidebarLinkProps> = ({ icon, text, to, ...rest }) => {
   return (
-    <Link to={to} className="sidebar-link" {...rest}>
+    <NavLink
+      to={to}
+      className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
+      {...rest}
+    >
       <span className="sidebar-link__icon">{icon}</span>
       {text && <span className="sidebar-link__text">{text}</span>}
-    </Link>
+    </NavLink>
   );
 };
 
