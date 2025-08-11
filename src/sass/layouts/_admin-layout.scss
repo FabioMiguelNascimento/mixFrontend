@@ -1,0 +1,17 @@
+@use '../functions';
+
+.admin-layout {
+  display: flex;
+  min-height: 100vh;
+  background-color: theme(background-primary);
+
+  [data-theme='dark'] & {
+    background-color: theme(primary-background);
+  }
+
+  .admin-content {
+    flex-grow: 1;
+    padding: 1.5rem;
+    // Adjust padding based on sidebar width
+  }
+}

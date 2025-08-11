@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth, UserRole } from '../contexts/AuthContext';
 import Sidebar from '../components/Sidebar';
@@ -9,6 +9,7 @@ interface AdminLayoutProps {
 
 const AdminLayout: React.FC<AdminLayoutProps> = ({ allowedRoles = [UserRole.ADMIN, UserRole.MANAGER, UserRole.SELLER] }) => {
   const { isAuthenticated, user } = useAuth();
+  const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
 
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
@@ -19,8 +20,8 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ allowedRoles = [UserRole.ADMI
   }
 
   return (
-    <div className="admin-layout">
-      <Sidebar />
+    <div className={`admin-layout ${!isSidebarExpanded ? 'admin-layout--sidebar-collapsed' : ''}`}>
+      <Sidebar isExpanded={isSidebarExpanded} setIsExpanded={setIsSidebarExpanded} />
       <main className="admin-content">
         <Outlet />
       </main>

@@ -1,59 +1,59 @@
 :root {
   // Light Theme
   // Primary
-  --color-primary-main: #4CAF50; // Verde Mix
-  --color-primary-dark: #388E3C; // Verde Escuro
-  --color-primary-light: #81C784; // Verde Claro
-  --color-primary-background: #E8F5E8; // Verde Muito Claro
+  --primary-main: #4CAF50; // Verde Mix
+  --primary-dark: #388E3C; // Verde Escuro
+  --primary-light: #81C784; // Verde Claro
+  --primary-background: #E8F5E8; // Verde Muito Claro
 
   // Secondary & Accents
-  --color-accent-orange: #FF9800; // Laranja Accent
-  --color-accent-orange-hover: #E68900; // Laranja Accent Hover
-  --color-accent-blue: #2196F3; // Azul Confiança
-  --color-accent-purple: #9C27B0; // Roxo Premium
-  --color-accent-red: #F44336; // Vermelho Urgência
-  --color-accent-red-hover: #DB3C2F; // Vermelho Urgência Hover
+  --accent-orange: #FF9800; // Laranja Accent
+  --accent-orange-hover: #E68900; // Laranja Accent Hover
+  --accent-blue: #2196F3; // Azul Confiança
+  --accent-purple: #9C27B0; // Roxo Premium
+  --accent-red: #F44336; // Vermelho Urgência
+  --accent-red-hover: #DB3C2F; // Vermelho Urgência Hover
 
   // Neutral
-  --color-text-primary: #000000; // Texto Principal
-  --color-text-secondary: #424242; // Texto Secundário
-  --color-text-auxiliary: #757575; // Texto Auxiliar
-  --color-border: #E0E0E0; // Bordas
-  --color-background: #FFFFFF; // Background
-  --color-background-soft: #FAFAFA; // Background Suave
-  --color-neutral-background-hover: #F0F0F0; // Background Suave Hover
-  --color-text-button-hover: #E0F0E0; // Text Button Hover
+  --text-primary: #000000; // Texto Principal
+  --text-secondary: #424242; // Texto Secundário
+  --text-auxiliary: #757575; // Texto Auxiliar
+  --border: #E0E0E0; // Bordas
+  --background: #FFFFFF; // Background
+  --background-soft: #FAFAFA; // Background Suave
+  --neutral-background-hover: #F0F0F0; // Background Suave Hover
+  --text-button-hover: #E0F0E0; // Text Button Hover
 
   // Shadows
-  --color-primary-main-shadow: rgba(76, 175, 80, 0.25);
+  --primary-main-shadow: rgba(76, 175, 80, 0.25);
 }
 
 [data-theme='dark'] {
   // Dark Theme
   // Primary
-  --color-primary-main: #66BB6A; // Verde Mix Dark
-  --color-primary-dark: #4CAF50; // Verde Intenso
-  --color-primary-light: #388E3C; // Verde Suave
-  --color-primary-background: #1B5E20; // Verde Escuro
+  --primary-main: #66BB6A; // Verde Mix Dark
+  --primary-dark: #4CAF50; // Verde Intenso
+  --primary-light: #388E3C; // Verde Suave
+  --primary-background: #1B5E20; // Verde Escuro
 
   // Secondary & Accents
-  --color-accent-orange: #FFB74D; // Laranja Suave
-  --color-accent-blue: #64B5F6; // Azul Suave
-  --color-accent-purple: #BA68C8; // Roxo Suave
-  --color-accent-red: #EF5350; // Vermelho Suave
-  --color-accent-red-hover: #F2726F; // Vermelho Suave Hover
+  --accent-orange: #FFB74D; // Laranja Suave
+  --accent-blue: #64B5F6; // Azul Suave
+  --accent-purple: #BA68C8; // Roxo Suave
+  --accent-red: #EF5350; // Vermelho Suave
+  --accent-red-hover: #F2726F; // Vermelho Suave Hover
 
   // Neutral
-  --color-text-primary: #FFFFFF; // Texto Principal
-  --color-text-secondary: #E0E0E0; // Texto Secundário
-  --color-text-auxiliary: #BDBDBD; // Texto Auxiliar
-  --color-border: #424242; // Bordas
-  --color-background: #121212; // Background
-  --color-background-soft: #1E1E1E; // Background Elevado
-  --color-background-section: #2C2C2C; // Background Seção
-  --color-neutral-background-hover: #262626; // Background Elevado Hover
-  --color-text-button-hover: #202020; // Text Button Hover
+  --text-primary: #FFFFFF; // Texto Principal
+  --text-secondary: #E0E0E0; // Texto Secundário
+  --text-auxiliary: #BDBDBD; // Texto Auxiliar
+  --border: #424242; // Bordas
+  --background: #121212; // Background
+  --background-soft: #1E1E1E; // Background Elevado
+  --background-section: #2C2C2C; // Background Seção
+  --neutral-background-hover: #262626; // Background Elevado Hover
+  --text-button-hover: #202020; // Text Button Hover
 
   // Shadows
-  --color-primary-light-shadow: rgba(56, 142, 60, 0.25);
+  --primary-light-shadow: rgba(56, 142, 60, 0.25);
 }
