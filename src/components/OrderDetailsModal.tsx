@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { format } from 'date-fns';
 import { OrderStatus, type Order } from '../schema/order.schema';
 import Chip from './Chip';
 import DropdownWrapper from './DropdownWrapper';
 import ConfirmationModal from './ConfirmationModal';
 import { useUpdateOrderStatus } from '../hooks/useUpdateOrderStatus';
-import { getStatusChipProps, getOrderStatusLabel } from '../utils/orderStatusUtils.tsx';
+import { getStatusChipProps } from '../utils/orderStatusUtils.tsx';
 
 interface OrderDetailsModalProps {
   order: Order | null;
@@ -21,6 +21,10 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ order, onOrderUpd
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [pendingStatus, setPendingStatus] = useState<OrderStatus | null>(null);
   const { updateStatus, loading, error } = useUpdateOrderStatus();
+
+  useEffect(() => {
+      setCurrentStatus(order.status);
+  }, [order]);
 
   const statusOptions = Object.values(OrderStatus).map(status => ({
     value: status,

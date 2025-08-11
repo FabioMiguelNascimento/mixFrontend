@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   createColumnHelper,
   flexRender,
@@ -23,7 +23,6 @@ import { getStatusChipProps } from '../utils/orderStatusUtils.tsx';
 import { MdArrowUpward, MdArrowDownward } from 'react-icons/md';
 
 const AdminOrders: React.FC = () => {
-  console.log('AdminOrders rendering...');
   const [globalFilter, setGlobalFilter] = React.useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
@@ -40,6 +39,15 @@ const AdminOrders: React.FC = () => {
     sortOrder: sorting.length > 0 ? (sorting[0].desc ? 'desc' : 'asc') : 'desc',
     globalFilter,
   });
+
+  useEffect(() => {
+    if (isModalOpen && selectedOrder) {
+      const updatedOrder = orders.find(order => order.id === selectedOrder.id);
+      if (updatedOrder && updatedOrder.status !== selectedOrder.status) {
+        setSelectedOrder(updatedOrder);
+      }
+    }
+  }, [orders, isModalOpen, selectedOrder]);
 
   const handleRefetch = () => {
     console.log('Refetching orders from AdminOrders.tsx...');
