@@ -24,7 +24,7 @@ export const useLogin = () => {
 
     const responseData = await request({
       method: 'POST',
-      url: '/api/auth/login',
+      url: '/auth/login',
       data: validatedCredentials,
     });
 

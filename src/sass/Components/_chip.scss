@@ -1,0 +1,80 @@
+@use '../functions' as *;
+@use '../variables' as *;
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+  transition: background-color 0.2s ease, color 0.2s ease;
+
+  &__icon {
+    display: inline-flex;
+    align-items: center;
+    margin-right: 0.5rem;
+    font-size: inherit;
+  }
+
+  &__text {
+    display: flex;
+    align-items: center;
+    margin-bottom: .25rem;
+  }
+
+  &--default {
+    background-color: theme(background-soft);
+    color: theme(text-secondary);
+    border: 1px solid theme(border);
+  }
+
+  &--primary {
+    background-color: theme(primary-main);
+    color: white;
+  }
+
+  &--secondary {
+    background-color: theme(accent-blue);
+    color: white;
+  }
+
+  &--success {
+    background-color: theme(primary-dark);
+    color: white;
+  }
+
+  &--danger {
+    background-color: theme(accent-red);
+    color: white;
+  }
+
+  &--warning {
+    background-color: theme(accent-orange);
+    color: white;
+  }
+
+  &--info {
+    background-color: theme(accent-purple);
+    color: white;
+  }
+
+  &--sm {
+    padding: 0.15rem 0.6rem;
+    font-size: 0.75rem;
+    .chip__icon {
+      font-size: 0.85rem;
+    }
+  }
+
+  &--lg {
+    padding: 0.35rem 0.9rem;
+    font-size: 1rem;
+    .chip__icon {
+      font-size: 1.1rem;
+    }
+  }
+}

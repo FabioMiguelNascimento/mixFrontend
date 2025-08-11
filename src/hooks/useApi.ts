@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import api from '../services/api';
 import type { AxiosError, AxiosRequestConfig } from 'axios';
 
@@ -15,7 +15,7 @@ export const useApi = <T = any>(): UseApiReturn<T> => {
   const [error, setError] = useState<AxiosError | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
 
-  const request = async (config: AxiosRequestConfig): Promise<T | null> => {
+  const request = useCallback(async (config: AxiosRequestConfig): Promise<T | null> => {
     setLoading(true);
     setError(null);
     try {
@@ -29,7 +29,7 @@ export const useApi = <T = any>(): UseApiReturn<T> => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   return { data, error, loading, request };
 };

@@ -3,7 +3,7 @@ import axios from 'axios';
 import type { UserData } from '../contexts/AuthContext';
 
 const api = axios.create({
-  baseURL: 'http://localhost:3000',
+  baseURL: 'http://localhost:3000/api',
 });
 
 api.interceptors.request.use(
