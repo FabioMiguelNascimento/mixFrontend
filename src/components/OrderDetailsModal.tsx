@@ -40,7 +40,6 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ order, onOrderUpd
 
     const result = await updateStatus(order.id, pendingStatus);
     if (result) {
-      console.log('Status updated successfully:', result);
       onOrderUpdated?.();
     } else {
       console.error('Failed to update status.', error);

@@ -50,7 +50,6 @@ const AdminOrders: React.FC = () => {
   }, [orders, isModalOpen, selectedOrder]);
 
   const handleRefetch = () => {
-    console.log('Refetching orders from AdminOrders.tsx...');
     refetch();
   };
 
