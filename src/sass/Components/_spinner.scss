@@ -1,0 +1,43 @@
+.spinner {
+  position: relative;
+  display: inline-block;
+  --petal-translate: 11px; // Default for md (24px spinner)
+
+  &[style*="width: 16px"] { // sm
+    --petal-translate: 7px;
+  }
+  &[style*="width: 32px"] { // lg
+    --petal-translate: 15px;
+  }
+  &[style*="width: 48px"] { // xl
+    --petal-translate: 23px;
+  }
+
+  .petal {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 6px;
+    height: 6px;
+    background-color: currentColor;
+    border-radius: 50%;
+    opacity: 0;
+    animation: fade-in-out 1.2s infinite ease-in-out;
+  }
+
+  @for $i from 1 through 8 {
+    .petal:nth-child(#{$i}) {
+      transform: translate(-50%, -50%) rotate($i * 45deg) translate(var(--petal-translate));
+      animation-delay: $i * 0.15s;
+    }
+  }
+}
+
+@keyframes fade-in-out {
+  0%, 100% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+}

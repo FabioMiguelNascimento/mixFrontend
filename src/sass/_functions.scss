@@ -1,0 +1,3 @@
+@function theme($key) {
+  @return var(--color-#{$key});
+}

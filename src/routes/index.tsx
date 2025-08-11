@@ -1,4 +1,3 @@
-
 import { Navigate, Outlet } from "react-router-dom";
 import { useAuth, UserRole } from "../contexts/AuthContext";
 import Dashboard from "../pages/Dashboard";
@@ -40,5 +39,5 @@ export const routes = [
         element: <Dashboard />,
       },
     ],
-  },
+  }
 ];
