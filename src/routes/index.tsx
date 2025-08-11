@@ -1,7 +1,8 @@
 import { Navigate, Outlet } from "react-router-dom";
 import { useAuth, UserRole } from "../contexts/AuthContext";
-import Dashboard from "../pages/Dashboard";
 import Home from "../pages/Home";
+import AdminLayout from "../layouts/AdminLayout"; // Import AdminLayout
+import AdminDashboard from "../pages/AdminDashboard"; // Import AdminDashboard
 import Login from "../pages/Login";
 
 const ProtectedRoute = () => {
@@ -31,13 +32,13 @@ export const routes = [
     element: <Login />,
   },
   {
-    path: "/dashboard",
-    element: <ProtectedRoute />,
+    path: "/admin",
+    element: <AdminLayout />,
     children: [
       {
         path: "",
-        element: <Dashboard />,
+        element: <AdminDashboard />,
       },
     ],
-  }
+  },
 ];

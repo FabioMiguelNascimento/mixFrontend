@@ -2,12 +2,12 @@
 import { createContext, useState, useEffect, useContext } from 'react';
 import { z } from 'zod';
 
-export const UserRole = {
-  ADMIN: 'ADMIN',
-  MANAGER: 'MANAGER',
-  SELLER: 'SELLER',
-  USER: 'USER',
-} as const;
+export enum UserRole {
+  ADMIN = 'ADMIN',
+  MANAGER = 'MANAGER',
+  SELLER = 'SELLER',
+  USER = 'USER',
+}
 
 
 const UserDataSchema = z.object({

@@ -3,7 +3,7 @@ import { useApi } from './useApi';
 import { useNavigate } from 'react-router-dom';
 
 import { z } from 'zod';
-import { type UserData, useAuth } from '../contexts/AuthContext';
+import { type UserData, useAuth, UserRole } from '../contexts/AuthContext';
 
 const loginSchema = z.object({
   email: z.email("Email inválido"),
@@ -28,9 +28,17 @@ export const useLogin = () => {
       data: validatedCredentials,
     });
 
-    if (responseData) {
+    if (responseData && responseData.data) {
       login(responseData.data);
-      navigate('/dashboard');
+
+      const userRole = responseData.data.role;
+      const adminRoles = [UserRole.ADMIN, UserRole.MANAGER, UserRole.SELLER];
+
+      if (adminRoles.includes(userRole)) {
+        navigate('/admin');
+      } else {
+        navigate('/dashboard');
+      }
     }
   };
 
