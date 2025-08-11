@@ -3,7 +3,7 @@ import React from 'react';
 interface ChipProps {
   text: string;
   icon?: React.ReactNode;
-  variant?: 'default' | 'primary' | 'secondary' | 'success' | 'danger' | 'warning' | 'info';
+  variant?: 'default' | 'primary' | 'secondary' | 'success' | 'danger' | 'warning' | 'info' | string;
   size?: 'sm' | 'md' | 'lg';
 }
 
