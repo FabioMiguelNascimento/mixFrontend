@@ -1,0 +1,298 @@
+@use '../variables' as *;
+@use '../functions' as *;
+
+.multi-select {
+  position: relative;
+
+  &__trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    min-height: 2.5rem;
+    height: auto;
+    padding: 0.75rem;
+    border: 1px solid theme(border);
+    border-radius: 0.375rem;
+    background-color: theme(background);
+    color: theme(text-primary);
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    box-sizing: border-box;
+
+    &:hover {
+      background-color: theme(neutral-background-hover);
+    }
+
+    &:focus {
+      outline: none;
+      border-color: theme(primary-main);
+      box-shadow: 0 0 0 2px theme(primary-main-shadow);
+    }
+
+    &--disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    &__content {
+      flex: 1;
+      text-align: left;
+      overflow: hidden;
+      min-width: 0;
+    }
+
+    &__actions {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-left: 0.5rem;
+      flex-shrink: 0;
+    }
+
+    &__chevron {
+      flex-shrink: 0;
+      
+      svg {
+        width: 1rem;
+        height: 1rem;
+        opacity: 0.5;
+      }
+    }
+  }
+
+  &__selected-items {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    width: 100%;
+    min-width: 0;
+
+    &--compact {
+      gap: 0.25rem;
+    }
+
+    &--pills {
+      gap: 0.25rem;
+    }
+  }
+
+  &__placeholder {
+    color: theme(text-auxiliary);
+    font-size: 0.875rem;
+    white-space: nowrap;
+  }
+
+  &__badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    transition: all 0.2s;
+    white-space: nowrap;
+    flex-shrink: 0;
+
+    &--selection-count {
+      background-color: theme(primary-background);
+      color: theme(primary-main);
+    }
+
+    &--remaining {
+      border: 1px solid theme(border);
+      color: theme(text-auxiliary);
+      background-color: theme(background-soft);
+    }
+  }
+
+  &__selected-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    background-color: theme(primary-background);
+    color: theme(primary-main);
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.875rem;
+    transition: all 0.2s;
+    white-space: nowrap;
+    flex-shrink: 0;
+    max-width: 100%;
+
+    &:hover {
+      background-color: theme(primary-light);
+      color: theme(primary-dark-hover);
+    }
+
+    &--pill {
+      background-color: theme(primary-background);
+      color: theme(primary-main);
+      
+      &:hover {
+        background-color: theme(primary-light);
+      }
+    }
+
+    &__text {
+      max-width: 7.5rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    &__remove {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      opacity: 0;
+      transition: opacity 0.2s ease-in-out;
+
+      &.button {
+        padding: 0 !important;
+        min-height: auto;
+        min-width: auto;
+        border-radius: 2px;
+      }
+    }
+
+    &:hover &__remove {
+      opacity: 1;
+    }
+  }
+
+  &__popover {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background-color: theme(background);
+    border: 1px solid theme(border);
+    border-radius: 0.375rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    margin-top: 0.25rem;
+    max-height: 18.75rem;
+    overflow: hidden;
+    min-width: 100%;
+    box-sizing: border-box;
+  }
+
+  &__search {
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid theme(border);
+    padding: 0.75rem;
+    box-sizing: border-box;
+
+    svg {
+      margin-right: 0.5rem;
+      width: 1rem;
+      height: 1rem;
+      flex-shrink: 0;
+      opacity: 0.5;
+      color: theme(text-auxiliary);
+    }
+
+    input {
+      flex: 1;
+      height: 1.25rem;
+      width: 100%;
+      background: transparent;
+      padding: 0;
+      font-size: 0.875rem;
+      outline: none;
+      border: none;
+      color: theme(text-primary);
+      box-sizing: border-box;
+
+      &::placeholder {
+        color: theme(text-auxiliary);
+      }
+
+      &:disabled {
+        cursor: not-allowed;
+        opacity: 0.5;
+      }
+    }
+  }
+
+  &__list {
+    max-height: 12.5rem;
+    overflow-y: auto;
+    box-sizing: border-box;
+  }
+
+  &__empty {
+    padding: 2rem 1rem;
+    text-align: center;
+    color: theme(text-auxiliary);
+    font-size: 0.875rem;
+  }
+
+  &__option {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    box-sizing: border-box;
+    min-height: auto;
+    text-align: left;
+
+    &:hover {
+      background-color: theme(neutral-background-hover);
+    }
+
+    &__checkbox {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.125rem;
+      height: 1.125rem;
+      border: 2px solid theme(text-auxiliary);
+      border-radius: 0.1875rem;
+      transition: all 0.2s;
+      flex-shrink: 0;
+
+      &--selected {
+        background-color: theme(primary-main);
+        border-color: theme(primary-main);
+        color: white;
+
+        svg {
+          width: 0.875rem;
+          height: 0.875rem;
+        }
+      }
+    }
+
+    &__label {
+      flex: 1;
+      color: theme(text-primary);
+      font-size: 0.875rem;
+      line-height: 1.25rem;
+      text-align: left;
+    }
+
+    &__color {
+      width: 0.75rem;
+      height: 0.75rem;
+      border-radius: 50%;
+      border: 1px solid theme(border);
+      flex-shrink: 0;
+    }
+  }
+
+  &__footer {
+    border-top: 1px solid theme(border);
+    padding: 0.75rem;
+    font-size: 0.75rem;
+    color: theme(text-auxiliary);
+    box-sizing: border-box;
+    text-align: left;
+  }
+}
