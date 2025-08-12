@@ -1,0 +1,44 @@
+@use '../functions' as *;
+@use '../variables' as *;
+
+.category-modal-content {
+  .form-group {
+    margin-bottom: 1.5rem;
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: theme(text-secondary);
+      font-size: 0.95rem;
+    }
+
+    input[type="text"] {
+      width: calc(100% - 2.5rem);
+      padding: 0.75rem 1rem;
+      border: 1px solid theme(border);
+      border-radius: 0.5rem;
+      background-color: theme(background-soft);
+      color: theme(text-primary);
+      font-size: 1rem;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+      &:focus {
+        outline: none;
+        border-color: theme(primary-main);
+        box-shadow: 0 0 0 3px rgba(theme(primary-main), 0.25);
+      }
+    }
+  }
+
+  .category-modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    margin-top: 2rem;
+
+    button {
+      min-width: 100px;
+    }
+  }
+}
