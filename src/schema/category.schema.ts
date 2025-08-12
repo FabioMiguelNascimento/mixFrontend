@@ -29,10 +29,10 @@ export const listCategorySchema = z.object({
 export type ListCategoryInput = z.infer<typeof listCategorySchema>;
 
 export const CategorySchema = z.object({
-  id: z.string().uuid(),
+  id: z.uuid(),
   name: z.string(),
-  createdAt: z.string().datetime(),
-  updatedAt: z.string().datetime(),
+  createdAt: z.iso.datetime(),
+  updatedAt: z.iso.datetime(),
 });
 
 export type Category = z.infer<typeof CategorySchema>;

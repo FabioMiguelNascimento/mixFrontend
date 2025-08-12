@@ -17,8 +17,10 @@
 @use './Components/data-table';
 @use './Components/tag-modal';
 @use './Components/category-modal';
+@use './Components/product-modal';
 @use './Components/multi-select';
 
 @use './layouts/admin-layout';
 @use './pages/admin-tags';
 @use './pages/admin-categories';
+@use './pages/admin-products';
