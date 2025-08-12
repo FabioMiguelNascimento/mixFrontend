@@ -58,6 +58,33 @@
     gap: 0.75rem;
   }
 
+  &--icon-only {
+    &.button--xs {
+      padding: 0.5rem;
+    }
+
+    &.button--sm {
+      padding: 0.375rem;
+    }
+
+    &.button--md {
+      padding: 0.5rem;
+    }
+
+    &.button--lg {
+      padding: 0.75rem;
+    }
+
+    &.button--xl {
+      padding: 1rem;
+    }
+
+    .button__icon--left,
+    .button__icon--right {
+      margin: 0 !important;
+    }
+  }
+
   &--primary {
     background-color: theme(primary-main);
     color: #fff;

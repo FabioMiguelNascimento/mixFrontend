@@ -1,5 +1,5 @@
 import React from 'react';
-import Spinner from './Spinner'; // Import the Spinner component
+import Spinner from './Spinner';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'outline' | 'text' | 'danger' | 'success';
@@ -27,7 +27,8 @@ const Button: React.FC<ButtonProps> = ({
   const loadingClass = loading ? 'button--loading' : '';
   const disabledClass = disabled || loading ? 'button--disabled' : '';
   const iconPositionClass = icon ? `button--icon-${iconPosition}` : '';
-  const sizeClass = `button--${size}`; // Add size class
+  const sizeClass = `button--${size}`;
+  const iconOnlyClass = (icon || loading) && !children ? 'button--icon-only' : '';
 
   const classes = [
     baseClasses,
@@ -35,7 +36,8 @@ const Button: React.FC<ButtonProps> = ({
     loadingClass,
     disabledClass,
     iconPositionClass,
-    sizeClass, // Add sizeClass here
+    sizeClass,
+    iconOnlyClass,
     className,
   ].filter(Boolean).join(' ');
 
