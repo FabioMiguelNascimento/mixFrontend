@@ -82,20 +82,6 @@ const AdminOrders: React.FC = () => {
   ];
 
 
-  const renderOrderActions = (order: Order) => {
-    return (
-      <button
-        onClick={() => {
-          setSelectedOrder(order);
-          setIsModalOpen(true);
-        }}
-        style={{ cursor: 'pointer', background: 'none', border: 'none', color: 'blue' }}
-      >
-        Ver Detalhes
-      </button>
-    );
-  };
-
   return (
     <div className="admin-orders-page">
       <DataTable
@@ -115,7 +101,6 @@ const AdminOrders: React.FC = () => {
           setSelectedOrder(order);
           setIsModalOpen(true);
         }}
-        renderRowActions={renderOrderActions}
       />
 
       <Modal

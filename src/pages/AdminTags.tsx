@@ -4,6 +4,8 @@ import { format } from 'date-fns';
 
 import { useTags } from '../hooks/useTags';
 import DataTable from '../components/DataTable/DataTable';
+import TagModal from '../components/TagModal';
+import { useTagMutations } from '../hooks/useTagMutations';
 import type { Tag } from '../schema/tag.schema';
 
 const AdminTags: React.FC = () => {
@@ -13,6 +15,8 @@ const AdminTags: React.FC = () => {
     pageIndex: 0,
     pageSize: 10,
   });
+  const [isTagModalOpen, setIsTagModalOpen] = useState(false);
+  const [selectedTag, setSelectedTag] = useState<Tag | null>(null);
 
   const { tags, totalTags, loading, error, refetch } = useTags({
     page: pagination.pageIndex + 1,
@@ -21,6 +25,8 @@ const AdminTags: React.FC = () => {
     sortOrder: sorting.length > 0 ? (sorting[0].desc ? 'desc' : 'asc') : 'desc',
     globalFilter,
   });
+
+  const { createTag, updateTag, deleteTag } = useTagMutations();
 
   const columnHelper = createColumnHelper<Tag>();
 
@@ -44,19 +50,43 @@ const AdminTags: React.FC = () => {
     }),
   ];
 
-  const renderTagActions = (tag: Tag) => {
-    return (
-      <div style={{ display: 'flex', gap: '0.5rem' }}>
-        <button onClick={() => console.log('Edit', tag.id)} style={{ background: 'none', border: 'none', color: 'blue', cursor: 'pointer' }}>Editar</button>
-        <button onClick={() => console.log('Delete', tag.id)} style={{ background: 'none', border: 'none', color: 'red', cursor: 'pointer' }}>Excluir</button>
-      </div>
-    );
+  const handleRowClick = (tag: Tag) => {
+    setSelectedTag(tag);
+    setIsTagModalOpen(true);
+  };
+
+  const handleCloseTagModal = () => {
+    setIsTagModalOpen(false);
+    setSelectedTag(null);
+    refetch();
+  };
+
+  const handleSaveTag = async (tagToSave: Tag) => {
+    if (tagToSave.id) {
+      await updateTag(tagToSave.id, tagToSave.name);
+    } else {
+      await createTag(tagToSave.name);
+    }
+    handleCloseTagModal();
+  };
+
+  const handleDeleteTag = async (tagId: string) => {
+    await deleteTag(tagId);
+    handleCloseTagModal();
   };
 
   return (
     <div className="admin-tags-page">
+      <div className="admin-tags-header">
+        <h2>Tags</h2>
+        <button className="add-tag-button" onClick={() => {
+          setSelectedTag(null);
+          setIsTagModalOpen(true);
+        }}>
+          Adicionar Tag
+        </button>
+      </div>
       <DataTable
-        title="Tags"
         data={tags}
         columns={columns}
         loading={loading}
@@ -68,7 +98,15 @@ const AdminTags: React.FC = () => {
         onSortingChange={setSorting}
         onGlobalFilterChange={setGlobalFilter}
         globalFilter={globalFilter}
-        renderRowActions={renderTagActions}
+        onRowClick={handleRowClick}
+      />
+
+      <TagModal
+        isOpen={isTagModalOpen}
+        onClose={handleCloseTagModal}
+        tag={selectedTag}
+        onSave={handleSaveTag}
+        onDelete={handleDeleteTag}
       />
     </div>
   );

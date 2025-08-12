@@ -1,0 +1,36 @@
+@use '../functions' as *;
+@use '../variables' as *;
+
+.admin-tags-page {
+  padding: 1.5rem;
+}
+
+.admin-tags-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+
+  h2 {
+    font-size: 2rem;
+    color: theme(text-primary);
+  }
+
+  .add-tag-button {
+    padding: 0.6rem 1.2rem;
+    border: 1px solid theme(primary-main);
+    border-radius: 0.375rem;
+    background-color: theme(primary-main);
+    color: white;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 2px 4px rgba(theme(primary-main), 0.2);
+
+    &:hover {
+      background-color: theme(primary-dark);
+      border-color: theme(primary-dark);
+      box-shadow: 0 4px 8px rgba(theme(primary-main), 0.3);
+    }
+  }
+}

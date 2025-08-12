@@ -72,32 +72,6 @@
     align-items: center;
     gap: 0.75rem;
 
-    button {
-      padding: 0.6rem 1.2rem;
-      border: 1px solid theme(primary-main);
-      border-radius: 0.375rem;
-      background-color: theme(primary-main);
-      color: white;
-      font-weight: 500;
-      cursor: pointer;
-      transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
-      box-shadow: 0 2px 4px rgba(theme(primary-main), 0.2);
-
-      &:hover:not(:disabled) {
-        background-color: theme(primary-dark);
-        border-color: theme(primary-dark);
-        box-shadow: 0 4px 8px rgba(theme(primary-main), 0.3);
-      }
-
-      &:disabled {
-        background-color: theme(border);
-        border-color: theme(border);
-        color: theme(text-auxiliary);
-        cursor: not-allowed;
-        box-shadow: none;
-      }
-    }
-
     span {
       display: flex;
       align-items: center;

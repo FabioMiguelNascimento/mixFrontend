@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 export const tagSchema = z.object({
-  id: z.string().uuid(),
+  id: z.uuid(),
   name: z.string().min(1, 'Nome da tag é obrigatório'),
   createdAt: z.iso.datetime(),
   updatedAt: z.iso.datetime(),

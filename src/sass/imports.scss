@@ -15,5 +15,7 @@
 @use './Components/dropdown-wrapper';
 @use './Components/confirmation-modal';
 @use './Components/data-table';
+@use './Components/tag-modal';
 
 @use './layouts/admin-layout';
+@use './pages/admin-tags';
