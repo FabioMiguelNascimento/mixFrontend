@@ -4,9 +4,9 @@ import { format } from 'date-fns';
 
 import { useCategories } from '../hooks/useCategories';
 import { useCategoryMutations } from '../hooks/useCategoryMutations';
-import DataTable from '../components/DataTable/DataTable';
 import CategoryModal from '../components/CategoryModal';
 import type { Category } from '../schema/category.schema';
+import DataTable from '../components/DataTable';
 
 const AdminCategories: React.FC = () => {
   const [globalFilter, setGlobalFilter] = React.useState('');

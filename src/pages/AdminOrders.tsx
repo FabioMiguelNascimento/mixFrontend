@@ -9,7 +9,7 @@ import type { Order } from '../schema/order.schema';
 import { OrderStatus } from '../schema/order.schema';
 import { getStatusChipProps } from '../utils/orderStatusUtils.tsx';
 import Chip from '../components/Chip';
-import DataTable from '../components/DataTable/DataTable';
+import DataTable from '../components/DataTable.tsx';
 
 const AdminOrders: React.FC = () => {
   const [globalFilter, setGlobalFilter] = React.useState('');

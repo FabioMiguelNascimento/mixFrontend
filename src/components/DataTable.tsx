@@ -1,8 +1,8 @@
 import { type ColumnDef, type PaginationState, type SortingState, useReactTable, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, flexRender } from "@tanstack/react-table";
 import React from "react";
 import { MdArrowUpward, MdArrowDownward } from "react-icons/md";
-import Button from "../Button";
-import Spinner from "../Spinner";
+import Button from "./Button";
+import Spinner from "./Spinner";
 
 
 interface DataTableProps<TData> {
@@ -18,7 +18,7 @@ interface DataTableProps<TData> {
   onGlobalFilterChange: (updater: string | ((oldFilter: string) => string)) => void;
   globalFilter: string;
   renderRowActions?: (row: TData) => React.ReactNode;
-  title: string;
+  title?: string;
   onRowClick?: (row: TData) => void;
 }
 

@@ -3,10 +3,10 @@ import { createColumnHelper } from '@tanstack/react-table';
 import { format } from 'date-fns';
 
 import { useTags } from '../hooks/useTags';
-import DataTable from '../components/DataTable/DataTable';
 import TagModal from '../components/TagModal';
 import { useTagMutations } from '../hooks/useTagMutations';
 import type { Tag } from '../schema/tag.schema';
+import DataTable from '../components/DataTable';
 
 const AdminTags: React.FC = () => {
   const [globalFilter, setGlobalFilter] = React.useState('');
