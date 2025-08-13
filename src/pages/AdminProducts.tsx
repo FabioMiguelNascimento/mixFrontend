@@ -87,7 +87,6 @@ const AdminProducts: React.FC = () => {
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setSelectedProduct(null);
-    refetch();
   };
 
   const handleSave = (product: Product) => {
@@ -100,6 +99,9 @@ const AdminProducts: React.FC = () => {
     handleCloseModal();
   };
 
+  const onStatusChange = () => {
+    refetch();
+  }
 
   return (
     <div className="admin-products-page">
@@ -148,6 +150,7 @@ const AdminProducts: React.FC = () => {
         onDelete={handleDelete}
         allCategories={categories}
         allTags={tags}
+        onStatusChange={onStatusChange}
       />
     </div>
   );

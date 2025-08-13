@@ -21,9 +21,10 @@ interface ProductModalProps {
   onDelete: (productId: string) => void;
   allCategories: Category[];
   allTags: Tag[];
+  onStatusChange: () => void;
 }
 
-const ProductModal: React.FC<ProductModalProps> = ({ isOpen, onClose, product, onSave, onDelete, allCategories, allTags }) => {
+const ProductModal: React.FC<ProductModalProps> = ({ isOpen, onClose, product, onSave, onDelete, allCategories, allTags, onStatusChange }) => {
   const [formData, setFormData] = useState<Partial<Product>>({});
   const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>([]);
   const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);
@@ -136,6 +137,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ isOpen, onClose, product, o
     const result = await updateStatus(product.id, pendingStatus);
     if (result) {
       setFormData(prev => ({ ...prev, status: pendingStatus }));
+      onStatusChange();
     } else {
       console.error('Failed to update status.', updateStatusError);
       setCurrentStatus(product.status);
