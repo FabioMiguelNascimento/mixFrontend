@@ -11,6 +11,7 @@ interface Option {
 }
 
 interface MultiSelectProps {
+  label: string;
   options: Option[]
   selected: string[]
   onSelectionChange: (selected: string[]) => void
@@ -23,6 +24,7 @@ interface MultiSelectProps {
 }
 
 export function MultiSelect({
+  label,
   options,
   selected,
   onSelectionChange,
@@ -141,88 +143,91 @@ export function MultiSelect({
   }
 
   return (
-    <div className={`multi-select ${className || ''}`} ref={dropdownRef}>
-      <Button
-        role="combobox"
-        aria-expanded={open}
-        className={`multi-select__trigger ${disabled ? 'multi-select__trigger--disabled' : ''}`}
-        disabled={disabled}
-        onClick={() => setOpen(!open)}
-        variant="text"
-        size="sm"
-      >
-        <div className="multi-select__trigger__content">{renderSelectedItems()}</div>
-        <div className="multi-select__trigger__actions">
-          {selected.length > 0 && !disabled && (
-            <Button
-              onClick={(e) => {
-                e.stopPropagation()
-                handleClearAll()
-              }}
-              className="multi-select__trigger__clear"
-              variant="text"
-              size="sm"
-              icon={<IoClose />}
-            />
-          )}
-          <div className="multi-select__trigger__chevron">
-            <IoChevronDown />
+    <div className="form-group">
+      <label>{label}</label>
+      <div className={`multi-select ${className || ''}`} ref={dropdownRef}>
+        <Button
+          role="combobox"
+          aria-expanded={open}
+          className={`multi-select__trigger ${disabled ? 'multi-select__trigger--disabled' : ''}`}
+          disabled={disabled}
+          onClick={() => setOpen(!open)}
+          variant="text"
+          size="sm"
+        >
+          <div className="multi-select__trigger__content">{renderSelectedItems()}</div>
+          <div className="multi-select__trigger__actions">
+            {selected.length > 0 && !disabled && (
+              <Button
+                onClick={(e) => {
+                  e.stopPropagation()
+                  handleClearAll()
+                }}
+                className="multi-select__trigger__clear"
+                variant="text"
+                size="sm"
+                icon={<IoClose />}
+              />
+            )}
+            <div className="multi-select__trigger__chevron">
+              <IoChevronDown />
+            </div>
           </div>
-        </div>
-      </Button>
+        </Button>
 
-      {open && (
-        <div className="multi-select__popover">
-          <div className="multi-select__search">
-            <IoSearch />
-            <input
-              placeholder={searchPlaceholder}
-              value={searchValue}
-              onChange={(e) => setSearchValue(e.target.value)}
-            />
-          </div>
-          
-          <div className="multi-select__list">
-            {availableOptions.length === 0 ? (
-              <div className="multi-select__empty">Nenhum item encontrado.</div>
-            ) : (
-              <>
-                {availableOptions.map((option) => {
-                  const isSelected = selected.includes(option.value)
-                  return (
-                    <div
-                      key={option.value}
-                      onClick={() => handleSelect(option.value)}
-                      className="multi-select__option"
-                    >
+        {open && (
+          <div className="multi-select__popover">
+            <div className="multi-select__search">
+              <IoSearch />
+              <input
+                placeholder={searchPlaceholder}
+                value={searchValue}
+                onChange={(e) => setSearchValue(e.target.value)}
+              />
+            </div>
+            
+            <div className="multi-select__list">
+              {availableOptions.length === 0 ? (
+                <div className="multi-select__empty">Nenhum item encontrado.</div>
+              ) : (
+                <>
+                  {availableOptions.map((option) => {
+                    const isSelected = selected.includes(option.value)
+                    return (
                       <div
-                        className={`multi-select__option__checkbox ${
-                          isSelected ? 'multi-select__option__checkbox--selected' : ''
-                        }`}
+                        key={option.value}
+                        onClick={() => handleSelect(option.value)}
+                        className="multi-select__option"
                       >
-                        {isSelected && <IoCheckmark />}
+                        <div
+                          className={`multi-select__option__checkbox ${
+                            isSelected ? 'multi-select__option__checkbox--selected' : ''
+                          }`}
+                        >
+                          {isSelected && <IoCheckmark />}
+                        </div>
+                        <span className="multi-select__option__label">{option.label}</span>
+                        {option.color && (
+                          <div 
+                            className="multi-select__option__color" 
+                            style={{ backgroundColor: option.color }} 
+                          />
+                        )}
                       </div>
-                      <span className="multi-select__option__label">{option.label}</span>
-                      {option.color && (
-                        <div 
-                          className="multi-select__option__color" 
-                          style={{ backgroundColor: option.color }} 
-                        />
-                      )}
-                    </div>
-                  )
-                })}
-              </>
+                    )
+                  })}
+                </>
+              )}
+            </div>
+
+            {selected.length > 0 && (
+              <div className="multi-select__footer">
+                {selected.length} de {options.length} itens selecionados
+              </div>
             )}
           </div>
-
-          {selected.length > 0 && (
-            <div className="multi-select__footer">
-              {selected.length} de {options.length} itens selecionados
-            </div>
-          )}
-        </div>
-      )}
+        )}
+      </div>
     </div>
   )
 }
