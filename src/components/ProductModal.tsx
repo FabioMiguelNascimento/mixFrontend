@@ -1,21 +1,24 @@
 import { useState, useEffect } from "react";
 import { useUpdateProductStatus } from "../hooks/useUpdateProductStatus";
 import { Category } from "../schema/category.schema";
-import { Product, ProductStatus, productStatusEnum, productTypeEnum } from "../schema/product.schema";
+import { Product, ProductStatus, productStatusEnum } from "../schema/product.schema";
 import { Tag } from "../schema/tag.schema";
 import { getProductStatusChipProps } from "../utils/productStatusUtils";
 import Chip from "./Chip";
 import ConfirmationModal from "./ConfirmationModal";
 import DropdownWrapper from "./DropdownWrapper";
+import Input from "./Input";
 import Modal from "./Modal";
 import { MultiSelect } from "./MultiSelect";
+import Textarea from "./Textarea";
+import NumberInput from "./NumberInput";
 
 interface ProductModalProps {
   isOpen: boolean;
   onClose: () => void;
   product: Product | null;
   onSave: (product: Product) => void;
-onDelete: (productId: string) => void;
+  onDelete: (productId: string) => void;
   allCategories: Category[];
   allTags: Tag[];
 }
@@ -79,7 +82,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ isOpen, onClose, product, o
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
-    
+
     setFormData(prev => ({
       ...prev,
       [name]: type === 'number' ? parseFloat(value) : value,
@@ -196,34 +199,55 @@ const ProductModal: React.FC<ProductModalProps> = ({ isOpen, onClose, product, o
               </div>
             </div>
             <div className="form-group-row">
-              <div className="form-group">
-                <label>Nome:</label>
-                <input type="text" name="name" value={formData.name || ''} onChange={handleChange} required />
-              </div>
-              <div className="form-group">
-                <label>SKU:</label>
-                <input type="text" name="sku" value={formData.sku || ''} onChange={handleChange} />
-              </div>
+              <Input
+                label="Nome:"
+                type="text"
+                name="name"
+                value={formData.name || ''}
+                onChange={handleChange}
+                required
+              />
+              <Input
+                label="SKU:"
+                type="text"
+                name="sku"
+                value={formData.sku || ''}
+                onChange={handleChange}
+              />
             </div>
             <div className="form-group-full-width">
-              <label>Descrição:</label>
-              <textarea name="description" value={formData.description || ''} onChange={handleChange} />
+              <Textarea
+                label="Descrição:"
+                name="description"
+                value={formData.description || ''}
+                onChange={handleChange}
+              />
             </div>
             <div className="form-group-row">
-              <div className="form-group">
-                <label>Preço:</label>
-                <input type="number" name="price" value={formData.price || 0} onChange={handleChange} required />
-              </div>
-              <div className="form-group">
-                <label>Desconto:</label>
-                <input type="number" name="discount" value={formData.discount || 0} onChange={handleChange} />
-              </div>
+              <NumberInput
+                label="Preço:"
+                name="price"
+                value={formData.price}
+                onChange={(value) => setFormData(prev => ({ ...prev, price: value }))}
+                required
+                decimalSeparator=","
+              />
+              <NumberInput
+                label="Desconto:"
+                name="discount"
+                value={formData.discount}
+                onChange={(value) => setFormData(prev => ({ ...prev, discount: value }))}
+                decimalSeparator=","
+              />
             </div>
             <div className="form-group-row">
-              <div className="form-group">
-                <label>Estoque:</label>
-                <input type="number" name="stock" value={formData.stock || 0} onChange={handleChange} required />
-              </div>
+              <NumberInput
+                label="Estoque:"
+                name="stock"
+                value={formData.stock}
+                onChange={(value) => setFormData(prev => ({ ...prev, stock: value }))}
+                required
+              />
               <div className="form-group">
                 <label>Status:</label>
                 <DropdownWrapper
@@ -242,32 +266,33 @@ const ProductModal: React.FC<ProductModalProps> = ({ isOpen, onClose, product, o
               </div>
             </div>
             <div className="multi-select-group">
-              <div>
-                <label>Categorias:</label>
-                <MultiSelect
-                  options={categoryOptions}
-                  selected={selectedCategoryIds}
-                  onSelectionChange={handleCategoryChange}
-                  placeholder="Selecionar categorias..."
-                  variant="pills"
-                  maxDisplayed={5}
-                />
-              </div>
-              <div>
-                <label>Tags:</label>
-                <MultiSelect
-                  options={tagOptions}
-                  selected={selectedTagIds}
-                  onSelectionChange={handleTagChange}
-                  placeholder="Selecionar tags..."
-                  variant="compact"
-                  maxDisplayed={5}
-                />
-              </div>
+              <MultiSelect
+                label="Categorias:"
+                options={categoryOptions}
+                selected={selectedCategoryIds}
+                onSelectionChange={handleCategoryChange}
+                placeholder="Selecionar categorias..."
+                variant="pills"
+                maxDisplayed={5}
+              />
+              <MultiSelect
+                label="Tags:"
+                options={tagOptions}
+                selected={selectedTagIds}
+                onSelectionChange={handleTagChange}
+                placeholder="Selecionar tags..."
+                variant="compact"
+                maxDisplayed={5}
+              />
             </div>
             <div className="form-group-full-width">
-              <label>Preço Total:</label>
-              <input type="number" value={formData.finalPrice || 0} readOnly />
+            <NumberInput
+              label="Valor total"
+              decimalSeparator=","
+              placeholder="e.g., 123,45"
+              value={formData.finalPrice}
+              disabled={true}
+            />
             </div>
           </div>
         </div>
