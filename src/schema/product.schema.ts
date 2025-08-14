@@ -25,7 +25,8 @@ export const imageSchema = z.object({
   url: z.string().url(),
 });
 
-export const productSchema = z.object({
+// Base schema without transformation, can be used for validation and picking fields
+export const baseProductSchema = z.object({
   id: z.string().uuid(),
   name: z.string(),
   description: z.string().nullable(),
@@ -44,8 +45,10 @@ export const productSchema = z.object({
   // Match the API response structure
   productCategories: z.array(z.object({ category: CategorySchema })),
   productTags: z.array(z.object({ tag: tagSchema })),
+});
 
-}).transform((data) => ({
+
+export const productSchema = baseProductSchema.transform((data) => ({
   ...data,
   // Create flattened arrays for easier use in components
   categories: data.productCategories.map((pc) => pc.category),

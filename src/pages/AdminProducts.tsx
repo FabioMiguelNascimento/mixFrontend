@@ -4,13 +4,14 @@ import { createColumnHelper } from '@tanstack/react-table';
 import { format } from 'date-fns';
 
 import { useProducts } from '../hooks/useProducts';
-import ProductModal from '../components/ProductModal';
+import { useProductMutations } from '../hooks/useProductMutations';
 import type { Product, ProductType } from '../schema/product.schema';
-import { useCategories } from '../hooks/useCategories';
-import { useTags } from '../hooks/useTags';
 import DataTable from '../components/DataTable';
 import Chip from '../components/Chip';
 import { getProductStatusChipProps } from '../utils/productStatusUtils';
+import { MutateProductModal } from '../components/product/MutateProductModal';
+import { ViewProductModal } from '../components/product/ViewProductModal';
+import Button from '../components/Button';
 
 const AdminProducts: React.FC = () => {
   const [globalFilter, setGlobalFilter] = React.useState('');
@@ -20,7 +21,9 @@ const AdminProducts: React.FC = () => {
     pageSize: 10,
   });
   const [activeTab, setActiveTab] = useState<ProductType>('SINGLE');
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+  const [isMutateModalOpen, setIsMutateModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
   const { products, totalProducts, loading, error, refetch } = useProducts({
@@ -32,19 +35,7 @@ const AdminProducts: React.FC = () => {
     type: activeTab,
   });
 
-  const { categories } = useCategories({
-    page: 1,
-    limit: 100,
-    sortBy: 'name',
-    sortOrder: 'asc',
-  });
-
-  const { tags } = useTags({
-    page: 1,
-    limit: 100,
-    sortBy: 'name',
-    sortOrder: 'asc',
-  });
+  const { createProduct, updateProduct, deleteProduct, isLoading } = useProductMutations();
 
   const columnHelper = createColumnHelper<Product>();
 
@@ -74,42 +65,48 @@ const AdminProducts: React.FC = () => {
     }),
   ];
 
-  const handleRowClick = (product: Product) => {
+  const handleViewProduct = (product: Product) => {
     setSelectedProduct(product);
-    setIsModalOpen(true);
+    setIsViewModalOpen(true);
   };
 
-  const handleOpenModalForNew = () => {
+  const handleCreateProduct = () => {
     setSelectedProduct(null);
-    setIsModalOpen(true);
+    setIsMutateModalOpen(true);
+  };
+  
+  const handleEditProduct = () => {
+    setIsViewModalOpen(false); // Close view modal
+    setIsMutateModalOpen(true); // Open mutate modal
   };
 
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
+  const handleCloseModals = () => {
+    setIsViewModalOpen(false);
+    setIsMutateModalOpen(false);
     setSelectedProduct(null);
   };
 
-  const handleSave = (product: Product) => {
-    console.log('Saving product:', product);
-    handleCloseModal();
+  const handleSave = async (data: any) => {
+    try {
+      if (selectedProduct) {
+        await updateProduct({ ...data, id: selectedProduct.id });
+      } else {
+        await createProduct(data);
+      }
+      refetch();
+      handleCloseModals();
+    } catch (e) {
+      console.error("Failed to save product", e);
+    }
   };
-
-  const handleDelete = (productId: string) => {
-    console.log('Deleting product:', productId);
-    handleCloseModal();
-  };
-
-  const onStatusChange = () => {
-    refetch();
-  }
 
   return (
     <div className="admin-products-page">
       <div className="admin-products-header">
         <h2>Produtos</h2>
-        <button className="add-product-button" onClick={handleOpenModalForNew}>
+        <Button onClick={handleCreateProduct} >
           Adicionar Produto
-        </button>
+        </Button>
       </div>
 
       <div className="tabs">
@@ -139,19 +136,27 @@ const AdminProducts: React.FC = () => {
         onSortingChange={setSorting}
         onGlobalFilterChange={setGlobalFilter}
         globalFilter={globalFilter}
-        onRowClick={handleRowClick}
+        onRowClick={handleViewProduct}
       />
 
-      <ProductModal
-        isOpen={isModalOpen}
-        onClose={handleCloseModal}
-        product={selectedProduct}
-        onSave={handleSave}
-        onDelete={handleDelete}
-        allCategories={categories}
-        allTags={tags}
-        onStatusChange={onStatusChange}
-      />
+      {isViewModalOpen && (
+        <ViewProductModal
+          isOpen={isViewModalOpen}
+          onClose={handleCloseModals}
+          product={selectedProduct}
+          onEdit={handleEditProduct}
+        />
+      )}
+
+      {isMutateModalOpen && (
+        <MutateProductModal
+          isOpen={isMutateModalOpen}
+          onClose={handleCloseModals}
+          product={selectedProduct}
+          onSave={handleSave}
+          isLoading={isLoading}
+        />
+      )}
     </div>
   );
 };
