@@ -1,23 +1,25 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { useProductImages } from "../hooks/useProductImages";
 import { useUpdateProductStatus } from "../hooks/useUpdateProductStatus";
 import { Category } from "../schema/category.schema";
-import { Product, ProductStatus, productStatusEnum } from "../schema/product.schema";
+import { Product, ProductImage, ProductStatus, productStatusEnum } from "../schema/product.schema";
 import { Tag } from "../schema/tag.schema";
 import { getProductStatusChipProps } from "../utils/productStatusUtils";
 import Chip from "./Chip";
 import ConfirmationModal from "./ConfirmationModal";
 import DropdownWrapper from "./DropdownWrapper";
+import ImageManager, { ImageManagerInput } from "./ImageManager";
 import Input from "./Input";
 import Modal from "./Modal";
 import { MultiSelect } from "./MultiSelect";
-import Textarea from "./Textarea";
 import NumberInput from "./NumberInput";
+import Textarea from "./Textarea";
 
 interface ProductModalProps {
   isOpen: boolean;
   onClose: () => void;
   product: Product | null;
-  onSave: (product: Product) => void;
+  onSave: (product: Product) => Promise<Product>;
   onDelete: (productId: string) => void;
   allCategories: Category[];
   allTags: Tag[];
@@ -28,11 +30,13 @@ const ProductModal: React.FC<ProductModalProps> = ({ isOpen, onClose, product, o
   const [formData, setFormData] = useState<Partial<Product>>({});
   const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>([]);
   const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);
+  const [isImageManagerOpen, setIsImageManagerOpen] = useState(false);
 
   const [currentStatus, setCurrentStatus] = useState<ProductStatus>(product?.status || productStatusEnum.enum.DRAFT);
   const [isConfirmStatusModalOpen, setIsConfirmStatusModalOpen] = useState(false);
   const [pendingStatus, setPendingStatus] = useState<ProductStatus | null>(null);
   const { updateStatus, loading: updateStatusLoading, error: updateStatusError } = useUpdateProductStatus();
+  const { uploadImage, deleteImage, loading: imageLoading, error: imageError } = useProductImages();
 
   useEffect(() => {
     if (product) {
@@ -40,6 +44,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ isOpen, onClose, product, o
         ...product,
         categories: product.categories || [],
         tags: product.tags || [],
+        images: product.images || [],
       });
       setSelectedCategoryIds(product.categories?.map(c => c.id) || []);
       setSelectedTagIds(product.tags?.map(t => t.id) || []);
@@ -108,11 +113,58 @@ const ProductModal: React.FC<ProductModalProps> = ({ isOpen, onClose, product, o
     }));
   };
 
-  const handleSave = () => {
-    if (formData.name && formData.price !== undefined && formData.stock !== undefined && formData.type) {
-      onSave(formData as Product);
-    } else {
+  const handleImagesSave = (newImages: ProductImage[]) => {
+    setFormData(prev => ({ ...prev, images: newImages }));
+  };
+
+  const handleSave = async () => {
+    if (!formData.name || formData.price === undefined || formData.stock === undefined || !formData.type) {
       alert('Por favor, preencha todos os campos obrigatórios.');
+      return;
+    }
+
+    try {
+      const savedProduct = await onSave(formData as Product);
+      const currentProductId = savedProduct.id;
+
+      const initialImages = product?.images || [];
+      const currentImages = formData.images || [];
+
+      const imagesToUpload = currentImages.filter(img => img.file);
+      const imagesToDelete = initialImages.filter(img => !currentImages.some(cImg => cImg.id === img.id));
+
+      await Promise.all(imagesToDelete.map(img => deleteImage(img.id)));
+
+      const uploadedImages = await Promise.all(
+        imagesToUpload.map(async (img) => {
+          if (img.file) {
+            return uploadImage(currentProductId, img.file);
+          }
+          return Promise.resolve(undefined);
+        })
+      ).then(results => results.filter(Boolean) as ProductImage[]);
+
+      const finalImagesForProduct = currentImages.map(currentImg => {
+        if (currentImg.file) {
+          const uploaded = uploadedImages.find(uploadedImg => uploadedImg?.altText === currentImg.altText && uploadedImg?.url === currentImg.url);
+          return uploaded || currentImg;
+        } else {
+          return initialImages.find(initialImg => initialImg.id === currentImg.id);
+        }
+      }).filter(Boolean) as ProductImage[];
+
+      const finalImagePayload = finalImagesForProduct.map(img => ({
+        id: img.id,
+        key: img.key,
+      }));
+
+      await onSave({ ...savedProduct, images: finalImagePayload });
+
+      onClose();
+      onStatusChange();
+    } catch (error) {
+      console.error("Erro ao salvar produto e imagens:", error);
+      alert("Erro ao salvar produto e imagens. Verifique o console para mais detalhes.");
     }
   };
 
@@ -194,11 +246,11 @@ const ProductModal: React.FC<ProductModalProps> = ({ isOpen, onClose, product, o
           <h3>Detalhes do Produto</h3>
           <div className="product-modal-details">
             <div className="form-group-full-width">
-              <label>Imagem:</label>
-              {/* TODO: Image upload/display component */}
-              <div style={{ border: '1px dashed #ccc', height: '100px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                Upload de Imagem
-              </div>
+              <label>Imagens:</label>
+              <ImageManagerInput
+                images={formData.images || []}
+                onOpenManager={() => setIsImageManagerOpen(true)}
+              />
             </div>
             <div className="form-group-row">
               <Input
@@ -297,7 +349,14 @@ const ProductModal: React.FC<ProductModalProps> = ({ isOpen, onClose, product, o
             />
             </div>
           </div>
-        </div>
+          </div>
+
+        <ImageManager
+          isOpen={isImageManagerOpen}
+          onClose={() => setIsImageManagerOpen(false)}
+          initialImages={formData.images || []}
+          onSave={handleImagesSave}
+        />
 
         <ConfirmationModal
           isOpen={isConfirmStatusModalOpen}

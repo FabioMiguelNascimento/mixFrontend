@@ -1,0 +1,303 @@
+@use '../functions' as *;
+@use '../variables' as *;
+
+.image-manager-input {
+  position: relative;
+  width: 100%;
+  height: 150px;
+  border: 2px dashed theme(border);
+  border-radius: 0.5rem;
+  cursor: pointer;
+  background-color: theme(bg-secondary);
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+  overflow: hidden;
+
+  &:hover {
+    border-color: theme(primary-main);
+    background-color: theme(bg-tertiary);
+  }
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .input-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: theme(text-secondary);
+
+    svg {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    span {
+      font-weight: 500;
+    }
+  }
+
+  .image-count-badge {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    background-color: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.75rem;
+    font-size: 0.8rem;
+    font-weight: bold;
+  }
+
+  .input-overlay {
+    position: absolute;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 600;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+
+  &:hover .input-overlay {
+    opacity: 1;
+  }
+}
+
+.image-manager {
+  display: flex;
+  flex-direction: column;
+  height: 70vh;
+  max-height: 800px;
+
+  .image-manager-main {
+    display: flex;
+    flex-grow: 1;
+    gap: 1.5rem;
+    overflow: hidden;
+  }
+
+  .image-manager-preview {
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: theme(bg-secondary);
+    border-radius: 0.5rem;
+    overflow: hidden;
+
+    img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+
+    .no-preview {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: theme(text-secondary);
+      svg {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+      }
+    }
+  }
+
+  .image-manager-gallery {
+    width: 300px;
+    flex-shrink: 0;
+    border-left: 1px solid theme(border);
+    padding-left: 1.5rem;
+    overflow-y: auto;
+
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      gap: 1rem;
+    }
+  }
+
+  .image-manager-thumbnail {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    border-radius: 0.375rem;
+    overflow: hidden;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: border-color 0.2s ease;
+
+    &.selected {
+      border-color: theme(primary-main);
+    }
+
+    &.dragging {
+      opacity: 0.5;
+    }
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .thumbnail-overlay {
+      position: absolute;
+      inset: 0;
+      // Adiciona um gradiente sutil no topo para dar contraste aos botões
+      background: linear-gradient(to bottom, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 40%);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+
+    &:hover .thumbnail-overlay {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .thumbnail-action-btn {
+      position: absolute; // Posicionamento absoluto dentro do overlay
+      top: 0.3rem;
+      background: rgba(0, 0, 0, 0.5);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+
+      &:hover {
+        background: rgba(0, 0, 0, 0.8);
+      }
+
+      &.delete-btn {
+        right: 0.3rem;
+        &:hover {
+          color: #ff5b5b; // Vermelho para exclusão
+        }
+      }
+      &.primary-btn {
+        right: 2.2rem; // Posicionado ao lado do botão de deletar
+         &:hover {
+          color: #ffc700; // Amarelo para destaque
+        }
+      }
+    }
+
+    .primary-indicator {
+      position: absolute;
+      top: 0.25rem;
+      left: 0.25rem;
+      color: theme(accent-yellow);
+      font-size: 1rem;
+      filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5));
+    }
+  }
+
+  .image-manager-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 1.5rem;
+    margin-top: 1.5rem;
+    border-top: 1px solid theme(border);
+
+    .add-button, .save-button, .cancel-button {
+      padding: 0.6rem 1.2rem;
+      border-radius: 0.375rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: background-color 0.2s ease, border-color 0.2s ease;
+    }
+
+    .add-button {
+        background-color: theme(primary-main);
+        color: white;
+        border-color: theme(primary-main);
+
+        &:hover {
+            background-color: theme(primary-dark);
+        }
+    }
+
+    .save-button {
+      background-color: theme(accent-green);
+      color: white;
+      border-color: theme(accent-green);
+      margin-left: 0.5rem;
+
+      &:hover {
+        background-color: theme(accent-green-hover);
+      }
+    }
+
+    .cancel-button {
+      background-color: theme(bg-secondary);
+      color: theme(text-primary);
+      border-color: theme(border);
+
+      &:hover {
+        background-color: theme(bg-tertiary);
+      }
+    }
+  }
+
+  // --- Media Query para Telas Pequenas (Mobile) ---
+  @media (max-width: 768px) {
+    .image-manager-main {
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .image-manager-gallery {
+      width: 100%;
+      padding-left: 0;
+      border-left: none;
+      border-top: 1px solid theme(border);
+      padding-top: 1rem;
+      max-height: 250px; // Altura máxima para a galeria rolável
+    }
+
+    .image-manager-preview {
+      flex-shrink: 0;
+      height: 40vh; // Altura definida para a pré-visualização
+    }
+
+    .image-manager-actions {
+      flex-direction: column;
+      gap: 1rem;
+      align-items: stretch; // Botões ocupam a largura total
+
+      .add-button {
+        order: 1; // Botão de adicionar primeiro
+      }
+
+      div {
+        order: 2;
+        display: flex;
+        gap: 1rem;
+        margin-left: 0;
+
+        .save-button,
+        .cancel-button {
+          flex-grow: 1; // Botões dividem o espaço
+          margin-left: 0;
+        }
+      }
+    }
+  }
+}
