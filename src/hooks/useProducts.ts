@@ -1,7 +1,7 @@
 
-import { useEffect, useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
+import { ProductsApiResponse, ProductType } from '../schema/product.schema';
 import { useApi } from './useApi';
-import type { Product, ProductType } from '../schema/product.schema';
 
 interface UseProductsParams {
   page: number;
@@ -10,18 +10,6 @@ interface UseProductsParams {
   sortOrder: 'asc' | 'desc';
   globalFilter?: string;
   type: ProductType;
-}
-
-interface ProductsApiResponse {
-  code: number;
-  message: string;
-  data: {
-    products: Product[];
-    total: number;
-    page: number;
-    limit: number;
-    totalPages: number;
-  };
 }
 
 export const useProducts = ({ page, limit, sortBy, sortOrder, globalFilter, type }: UseProductsParams) => {

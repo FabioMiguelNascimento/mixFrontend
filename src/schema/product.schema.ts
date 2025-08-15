@@ -22,7 +22,7 @@ export const basketItemSchema = z.object({
 export const imageSchema = z.object({
   id: z.string().uuid(),
   key: z.string(),
-  url: z.string().url(),
+  url: z.url().optional(),
 });
 
 // Base schema without transformation, can be used for validation and picking fields
@@ -42,7 +42,6 @@ export const baseProductSchema = z.object({
   images: z.array(imageSchema),
   basketItems: z.array(basketItemSchema).optional(),
 
-  // Match the API response structure
   productCategories: z.array(z.object({ category: CategorySchema })),
   productTags: z.array(z.object({ tag: tagSchema })),
 });
@@ -50,7 +49,6 @@ export const baseProductSchema = z.object({
 
 export const productSchema = baseProductSchema.transform((data) => ({
   ...data,
-  // Create flattened arrays for easier use in components
   categories: data.productCategories.map((pc) => pc.category),
   tags: data.productTags.map((pt) => pt.tag),
 }));
@@ -60,3 +58,17 @@ export type ProductType = z.infer<typeof productTypeEnum>;
 export type ProductStatus = z.infer<typeof productStatusEnum>;
 export type BasketItem = z.infer<typeof basketItemSchema>;
 export type ProductImage = z.infer<typeof imageSchema>;
+
+export const productsApiResponseSchema = z.object({
+  code: z.number(),
+  message: z.string(),
+  data: z.object({
+    products: z.array(productSchema),
+    total: z.number(),
+    page: z.number(),
+    limit: z.number(),
+    totalPages: z.number(),
+  }),
+});
+
+export type ProductsApiResponse = z.infer<typeof productsApiResponseSchema>;

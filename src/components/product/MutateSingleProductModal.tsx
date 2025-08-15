@@ -1,4 +1,3 @@
-
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -6,9 +5,12 @@ import { z } from "zod";
 
 import { useCategories } from "../../hooks/useCategories";
 import { useTags } from "../../hooks/useTags";
-import { Product, ProductImage } from "../../schema/product.schema";
+import { Product, ProductImage, productStatusEnum } from "../../schema/product.schema";
 
+import { getProductStatusChipProps } from "../../utils/productStatusUtils";
 import Button from "../Button";
+import Chip from "../Chip";
+import DropdownWrapper from "../DropdownWrapper";
 import ImageManager, { ImageManagerInput } from "../ImageManager";
 import Input from "../Input";
 import Modal from "../Modal";
@@ -20,17 +22,25 @@ const mutateProductSchema = z.object({
   name: z.string().min(1, "Nome é obrigatório."),
   description: z.string().nullable().optional(),
   sku: z.string().nullable().optional(),
-  price: z.number({ error: "Preço é obrigatório." }).min(0.01, "Preço deve ser maior que zero."),
-  discount: z.number({ error: "Desconto é obrigatório." }).min(0, "Desconto não pode ser negativo.").optional(),
-  stock: z.number({ error: "Estoque é obrigatório." }).int("Estoque deve ser um número inteiro.").min(0, "Estoque não pode ser negativo."),
-  categoryIds: z.array(z.string())
-    .min(1, "Selecione ao menos uma categoria."),
+  price: z
+    .number({ error: "Preço é obrigatório." })
+    .min(0.01, "Preço deve ser maior que zero."),
+  discount: z
+    .number({ error: "Desconto é obrigatório." })
+    .min(0, "Desconto não pode ser negativo.")
+    .optional(),
+  stock: z
+    .number({ error: "Estoque é obrigatório." })
+    .int("Estoque deve ser um número inteiro.")
+    .min(0, "Estoque não pode ser negativo."),
+  categoryIds: z.array(z.string()).min(1, "Selecione ao menos uma categoria."),
   tagIds: z.array(z.string()).optional(),
+  status: productStatusEnum.default('DRAFT').nonoptional(),
 });
 
 type MutateProductFormValues = z.infer<typeof mutateProductSchema>;
 
-interface MutateProductModalProps {
+interface MutateSingleProductModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: (data: any) => void;
@@ -38,56 +48,58 @@ interface MutateProductModalProps {
   isLoading: boolean;
 }
 
-export const MutateProductModal: React.FC<MutateProductModalProps> = ({
-  isOpen,
-  onClose,
-  onSave,
-  product,
-  isLoading,
-}) => {
+export const MutateSingleProductModal: React.FC<
+  MutateSingleProductModalProps
+> = ({ isOpen, onClose, onSave, product, isLoading }) => {
   const isEditMode = !!product;
   const {
     control,
     handleSubmit,
     watch,
+    reset,
     formState: { errors },
   } = useForm<MutateProductFormValues>({
     resolver: zodResolver(mutateProductSchema),
-    defaultValues: async () => {
-      if (product) {
-        return {
-          name: product.name,
-          description: product.description || "",
-          sku: product.sku || "",
-          price: product.price,
-          discount: product.discount || 0,
-          stock: product.stock,
-          categoryIds: product.categories?.map((c) => c.id) || [],
-          tagIds: product.tags?.map((t) => t.id) || [],
-        };
-      } else {
-        return {
-          name: "",
-          description: "",
-          sku: "",
-          price: 0,
-          discount: 0,
-          stock: 0,
-          categoryIds: [],
-          tagIds: [],
-        };
-      }
+    defaultValues: {
+      name: "",
+      description: "",
+      sku: "",
+      price: 0,
+      discount: 0,
+      stock: 0,
+      categoryIds: [],
+      tagIds: [],
+      status: productStatusEnum.enum.DRAFT,
     },
   });
 
   const [images, setImages] = useState<ProductImage[]>([]);
   const [isImageManagerOpen, setIsImageManagerOpen] = useState(false);
 
-  const { categories: allCategories } = useCategories({ page: 1, limit: 100, sortBy: 'name', sortOrder: 'asc' });
-  const { tags: allTags } = useTags({ page: 1, limit: 100, sortBy: 'name', sortOrder: 'asc' });
+  const { categories: allCategories } = useCategories({
+    page: 1,
+    limit: 100,
+    sortBy: "name",
+    sortOrder: "asc",
+  });
+  const { tags: allTags } = useTags({
+    page: 1,
+    limit: 100,
+    sortBy: "name",
+    sortOrder: "asc",
+  });
 
-  const categoryOptions = allCategories.map((cat) => ({ value: cat.id, label: cat.name }));
+  const categoryOptions = allCategories.map((cat) => ({
+    value: cat.id,
+    label: cat.name,
+  }));
   const tagOptions = allTags.map((tag) => ({ value: tag.id, label: tag.name }));
+
+  const statusOptions = Object.values(productStatusEnum.enum).map(status => ({
+    value: status,
+    label: getProductStatusChipProps(status).text,
+    icon: getProductStatusChipProps(status).icon,
+  }));
 
   const price = watch("price");
   const discount = watch("discount");
@@ -96,18 +108,40 @@ export const MutateProductModal: React.FC<MutateProductModalProps> = ({
   useEffect(() => {
     if (isOpen) {
       if (product) {
+        reset({
+          name: product.name,
+          description: product.description || "",
+          sku: product.sku || "",
+          price: product.price,
+          discount: product.discount || 0,
+          stock: product.stock,
+          categoryIds: product.categories?.map((c) => c.id) || [],
+          tagIds: product.tags?.map((t) => t.id) || [],
+          status: product.status,
+        });
         setImages(product.images || []);
       } else {
+        reset({
+          name: "",
+          description: "",
+          sku: "",
+          price: 0,
+          discount: 0,
+          stock: 0,
+          categoryIds: [],
+          tagIds: [],
+          status: productStatusEnum.enum.DRAFT,
+        });
         setImages([]);
       }
     }
-  }, [product, isOpen]);
+  }, [product, isOpen, reset]);
 
   const handleFormSubmit = (data: MutateProductFormValues) => {
     const payload = {
       ...data,
       id: product?.id,
-      images: images.map(img => ({ key: img.key })),
+      images: images.map((img) => ({ key: img.key })),
       finalPrice: finalPrice,
       type: "SINGLE",
     };
@@ -115,7 +149,11 @@ export const MutateProductModal: React.FC<MutateProductModalProps> = ({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title={isEditMode ? "Editar Produto" : "Criar Novo Produto"}>
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title={isEditMode ? "Editar Produto" : "Criar Novo Produto"}
+    >
       <div className="product-modal">
         <form onSubmit={handleSubmit(handleFormSubmit)}>
           <div className="product-modal-section">
@@ -136,7 +174,11 @@ export const MutateProductModal: React.FC<MutateProductModalProps> = ({
                   name="name"
                   control={control}
                   render={({ field }) => (
-                    <Input {...field} label="Nome" error={errors.name?.message} />
+                    <Input
+                      {...field}
+                      label="Nome"
+                      error={errors.name?.message}
+                    />
                   )}
                 />
               </div>
@@ -156,7 +198,11 @@ export const MutateProductModal: React.FC<MutateProductModalProps> = ({
                   name="description"
                   control={control}
                   render={({ field }) => (
-                    <Textarea {...field} label="Descrição" error={errors.description?.message} />
+                    <Textarea
+                      {...field}
+                      label="Descrição"
+                      error={errors.description?.message}
+                    />
                   )}
                 />
               </div>
@@ -201,7 +247,29 @@ export const MutateProductModal: React.FC<MutateProductModalProps> = ({
                     />
                   )}
                 />
-                <NumberInput label="Valor Final" value={finalPrice} disabled />
+                <div className="status-field">
+                  <label htmlFor="">Status</label>
+                  <Controller
+                    name="status"
+                    control={control}
+                    render={({ field }) => {
+                      const currentStatusProps = getProductStatusChipProps(field.value);
+                      return (
+                        <DropdownWrapper
+                          trigger={
+                            <Chip
+                              text={currentStatusProps.text}
+                              variant={currentStatusProps.variant}
+                              icon={currentStatusProps.icon}
+                            />
+                          }
+                          options={statusOptions}
+                          onSelect={field.onChange}
+                        />
+                      );
+                    }}
+                  />
+                </div>
               </div>
 
               <div className="multi-select-group">
@@ -233,6 +301,9 @@ export const MutateProductModal: React.FC<MutateProductModalProps> = ({
                     />
                   )}
                 />
+              </div>
+              <div className="form-group-full-width">
+                <NumberInput label="Valor Final" value={finalPrice} disabled />
               </div>
             </div>
           </div>

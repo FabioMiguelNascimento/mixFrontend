@@ -1,17 +1,17 @@
 
-import React, { useState } from 'react';
 import { createColumnHelper } from '@tanstack/react-table';
 import { format } from 'date-fns';
+import React, { useState } from 'react';
 
-import { useProducts } from '../hooks/useProducts';
-import { useProductMutations } from '../hooks/useProductMutations';
-import type { Product, ProductType } from '../schema/product.schema';
-import DataTable from '../components/DataTable';
-import Chip from '../components/Chip';
-import { getProductStatusChipProps } from '../utils/productStatusUtils';
-import { MutateProductModal } from '../components/product/MutateProductModal';
-import { ViewProductModal } from '../components/product/ViewProductModal';
 import Button from '../components/Button';
+import Chip from '../components/Chip';
+import DataTable from '../components/DataTable';
+import { MutateBasketProductModal } from '../components/product/MutateBasketProductModal';
+import { MutateSingleProductModal } from '../components/product/MutateSingleProductModal';
+import { useProductMutations } from '../hooks/useProductMutations';
+import { useProducts } from '../hooks/useProducts';
+import type { Product, ProductType } from '../schema/product.schema';
+import { getProductStatusChipProps } from '../utils/productStatusUtils';
 
 const AdminProducts: React.FC = () => {
   const [globalFilter, setGlobalFilter] = React.useState('');
@@ -22,9 +22,9 @@ const AdminProducts: React.FC = () => {
   });
   const [activeTab, setActiveTab] = useState<ProductType>('SINGLE');
   
-  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [isMutateModalOpen, setIsMutateModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [createProductType, setCreateProductType] = useState<ProductType | null>(null);
 
   const { products, totalProducts, loading, error, refetch } = useProducts({
     page: pagination.pageIndex + 1,
@@ -65,25 +65,22 @@ const AdminProducts: React.FC = () => {
     }),
   ];
 
-  const handleViewProduct = (product: Product) => {
+  const handleOpenEditModal = (product: Product) => {
     setSelectedProduct(product);
-    setIsViewModalOpen(true);
+    setIsMutateModalOpen(true);
+    setCreateProductType(null);
   };
 
-  const handleCreateProduct = () => {
+  const handleCreateProduct = (type: ProductType) => {
     setSelectedProduct(null);
+    setCreateProductType(type);
     setIsMutateModalOpen(true);
   };
   
-  const handleEditProduct = () => {
-    setIsViewModalOpen(false); // Close view modal
-    setIsMutateModalOpen(true); // Open mutate modal
-  };
-
   const handleCloseModals = () => {
-    setIsViewModalOpen(false);
     setIsMutateModalOpen(false);
     setSelectedProduct(null);
+    setCreateProductType(null);
   };
 
   const handleSave = async (data: any) => {
@@ -104,8 +101,8 @@ const AdminProducts: React.FC = () => {
     <div className="admin-products-page">
       <div className="admin-products-header">
         <h2>Produtos</h2>
-        <Button onClick={handleCreateProduct} >
-          Adicionar Produto
+        <Button onClick={() => handleCreateProduct(activeTab)} >
+          {activeTab === 'SINGLE' ? 'Adicionar Produto' : 'Adicionar Cesta'}
         </Button>
       </div>
 
@@ -136,20 +133,21 @@ const AdminProducts: React.FC = () => {
         onSortingChange={setSorting}
         onGlobalFilterChange={setGlobalFilter}
         globalFilter={globalFilter}
-        onRowClick={handleViewProduct}
+        onRowClick={handleOpenEditModal}
       />
 
-      {isViewModalOpen && (
-        <ViewProductModal
-          isOpen={isViewModalOpen}
+      {isMutateModalOpen && (selectedProduct?.type === 'SINGLE' || createProductType === 'SINGLE') && (
+        <MutateSingleProductModal
+          isOpen={isMutateModalOpen}
           onClose={handleCloseModals}
           product={selectedProduct}
-          onEdit={handleEditProduct}
+          onSave={handleSave}
+          isLoading={isLoading}
         />
       )}
 
-      {isMutateModalOpen && (
-        <MutateProductModal
+      {isMutateModalOpen && (selectedProduct?.type === 'BASKET' || createProductType === 'BASKET') && (
+        <MutateBasketProductModal
           isOpen={isMutateModalOpen}
           onClose={handleCloseModals}
           product={selectedProduct}
