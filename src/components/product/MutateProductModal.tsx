@@ -6,7 +6,7 @@ import { z } from "zod";
 
 import { useCategories } from "../../hooks/useCategories";
 import { useTags } from "../../hooks/useTags";
-import { Product, ProductImage, baseProductSchema } from "../../schema/product.schema";
+import { Product, ProductImage } from "../../schema/product.schema";
 
 import Button from "../Button";
 import ImageManager, { ImageManagerInput } from "../ImageManager";
@@ -16,15 +16,16 @@ import { MultiSelect } from "../MultiSelect";
 import NumberInput from "../NumberInput";
 import Textarea from "../Textarea";
 
-// Zod schema for form validation
-const mutateProductSchema = baseProductSchema.pick({
-  name: true,
-  description: true,
-  sku: true,
-  price: true,
-  discount: true,
-  stock: true,
-  type: true,
+const mutateProductSchema = z.object({
+  name: z.string().min(1, "Nome é obrigatório."),
+  description: z.string().nullable().optional(),
+  sku: z.string().nullable().optional(),
+  price: z.number({ error: "Preço é obrigatório." }).min(0.01, "Preço deve ser maior que zero."),
+  discount: z.number({ error: "Desconto é obrigatório." }).min(0, "Desconto não pode ser negativo.").optional(),
+  stock: z.number({ error: "Estoque é obrigatório." }).int("Estoque deve ser um número inteiro.").min(0, "Estoque não pode ser negativo."),
+  categoryIds: z.array(z.string())
+    .min(1, "Selecione ao menos uma categoria."),
+  tagIds: z.array(z.string()).optional(),
 });
 
 type MutateProductFormValues = z.infer<typeof mutateProductSchema>;
@@ -32,7 +33,7 @@ type MutateProductFormValues = z.infer<typeof mutateProductSchema>;
 interface MutateProductModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (data: any) => void; // Simplified for now
+  onSave: (data: any) => void;
   product: Product | null;
   isLoading: boolean;
 }
@@ -48,30 +49,45 @@ export const MutateProductModal: React.FC<MutateProductModalProps> = ({
   const {
     control,
     handleSubmit,
-    reset,
     watch,
-    setValue,
+    formState: { errors },
   } = useForm<MutateProductFormValues>({
     resolver: zodResolver(mutateProductSchema),
-    defaultValues: {
-      name: "",
-      description: "",
-      sku: "",
-      price: 0,
-      discount: 0,
-      stock: 0,
-      type: "SINGLE",
+    defaultValues: async () => {
+      if (product) {
+        return {
+          name: product.name,
+          description: product.description || "",
+          sku: product.sku || "",
+          price: product.price,
+          discount: product.discount || 0,
+          stock: product.stock,
+          categoryIds: product.categories?.map((c) => c.id) || [],
+          tagIds: product.tags?.map((t) => t.id) || [],
+        };
+      } else {
+        return {
+          name: "",
+          description: "",
+          sku: "",
+          price: 0,
+          discount: 0,
+          stock: 0,
+          categoryIds: [],
+          tagIds: [],
+        };
+      }
     },
   });
 
-  const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>([]);
-  const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);
   const [images, setImages] = useState<ProductImage[]>([]);
   const [isImageManagerOpen, setIsImageManagerOpen] = useState(false);
 
-  // Fetching categories and tags
-  const { categories: allCategories } = useCategories({ limit: 100 });
-  const { tags: allTags } = useTags({ limit: 100 });
+  const { categories: allCategories } = useCategories({ page: 1, limit: 100, sortBy: 'name', sortOrder: 'asc' });
+  const { tags: allTags } = useTags({ page: 1, limit: 100, sortBy: 'name', sortOrder: 'asc' });
+
+  const categoryOptions = allCategories.map((cat) => ({ value: cat.id, label: cat.name }));
+  const tagOptions = allTags.map((tag) => ({ value: tag.id, label: tag.name }));
 
   const price = watch("price");
   const discount = watch("discount");
@@ -80,43 +96,23 @@ export const MutateProductModal: React.FC<MutateProductModalProps> = ({
   useEffect(() => {
     if (isOpen) {
       if (product) {
-        // Edit mode
-        reset({
-          name: product.name,
-          description: product.description || "",
-          sku: product.sku || "",
-          price: product.price,
-          discount: product.discount || 0,
-          stock: product.stock,
-          type: product.type,
-        });
-        setSelectedCategoryIds(product.categories?.map((c) => c.id) || []);
-        setSelectedTagIds(product.tags?.map((t) => t.id) || []);
         setImages(product.images || []);
       } else {
-        // Create mode
-        reset();
-        setSelectedCategoryIds([]);
-        setSelectedTagIds([]);
         setImages([]);
       }
     }
-  }, [product, isOpen, reset]);
+  }, [product, isOpen]);
 
   const handleFormSubmit = (data: MutateProductFormValues) => {
     const payload = {
       ...data,
       id: product?.id,
-      categoryIds: selectedCategoryIds,
-      tagIds: selectedTagIds,
-      images,
-      finalPrice: finalPrice
+      images: images.map(img => ({ key: img.key })),
+      finalPrice: finalPrice,
+      type: "SINGLE",
     };
     onSave(payload);
   };
-
-  const categoryOptions = allCategories.map((cat) => ({ value: cat.id, label: cat.name }));
-  const tagOptions = allTags.map((tag) => ({ value: tag.id, label: tag.name }));
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={isEditMode ? "Editar Produto" : "Criar Novo Produto"}>
@@ -139,18 +135,18 @@ export const MutateProductModal: React.FC<MutateProductModalProps> = ({
                 <Controller
                   name="name"
                   control={control}
-                  render={({ field, fieldState }) => (
-                    <Input {...field} label="Nome" error={fieldState.error?.message} required />
+                  render={({ field }) => (
+                    <Input {...field} label="Nome" error={errors.name?.message} />
                   )}
                 />
               </div>
 
               <div className="form-group-full-width">
-                 <Controller
+                <Controller
                   name="sku"
                   control={control}
-                  render={({ field, fieldState }) => (
-                    <Input {...field} label="SKU" error={fieldState.error?.message} />
+                  render={({ field }) => (
+                    <Input {...field} label="SKU" error={errors.sku?.message} />
                   )}
                 />
               </div>
@@ -159,8 +155,8 @@ export const MutateProductModal: React.FC<MutateProductModalProps> = ({
                 <Controller
                   name="description"
                   control={control}
-                  render={({ field, fieldState }) => (
-                    <Textarea {...field} label="Descrição" error={fieldState.error?.message} />
+                  render={({ field }) => (
+                    <Textarea {...field} label="Descrição" error={errors.description?.message} />
                   )}
                 />
               </div>
@@ -169,25 +165,24 @@ export const MutateProductModal: React.FC<MutateProductModalProps> = ({
                 <Controller
                   name="price"
                   control={control}
-                  render={({ field, fieldState }) => (
+                  render={({ field }) => (
                     <NumberInput
                       {...field}
                       label="Preço"
-                      onValueChange={field.onChange}
-                      error={fieldState.error?.message}
-                      required
+                      onChange={(value) => field.onChange(value)}
+                      error={errors.price?.message}
                     />
                   )}
                 />
                 <Controller
                   name="discount"
                   control={control}
-                  render={({ field, fieldState }) => (
+                  render={({ field }) => (
                     <NumberInput
                       {...field}
                       label="Desconto"
-                      onValueChange={field.onChange}
-                      error={fieldState.error?.message}
+                      onChange={(value) => field.onChange(value)}
+                      error={errors.discount?.message}
                     />
                   )}
                 />
@@ -197,37 +192,46 @@ export const MutateProductModal: React.FC<MutateProductModalProps> = ({
                 <Controller
                   name="stock"
                   control={control}
-                  render={({ field, fieldState }) => (
+                  render={({ field }) => (
                     <NumberInput
                       {...field}
                       label="Estoque"
-                      onValueChange={field.onChange}
-                      error={fieldState.error?.message}
-                      required
+                      onChange={(value) => field.onChange(value)}
+                      error={errors.stock?.message}
                     />
                   )}
                 />
-                <NumberInput
-                    label="Valor Final"
-                    value={finalPrice}
-                    disabled
-                  />
+                <NumberInput label="Valor Final" value={finalPrice} disabled />
               </div>
 
               <div className="multi-select-group">
-                <MultiSelect
-                  label="Categorias"
-                  options={categoryOptions}
-                  selected={selectedCategoryIds}
-                  onSelectionChange={setSelectedCategoryIds}
-                  placeholder="Selecionar categorias..."
+                <Controller
+                  name="categoryIds"
+                  control={control}
+                  render={({ field }) => (
+                    <MultiSelect
+                      label="Categorias"
+                      options={categoryOptions}
+                      selected={field.value}
+                      onSelectionChange={field.onChange}
+                      placeholder="Selecionar categorias..."
+                      error={errors.categoryIds?.message}
+                    />
+                  )}
                 />
-                <MultiSelect
-                  label="Tags"
-                  options={tagOptions}
-                  selected={selectedTagIds}
-                  onSelectionChange={setSelectedTagIds}
-                  placeholder="Selecionar tags..."
+                <Controller
+                  name="tagIds"
+                  control={control}
+                  render={({ field }) => (
+                    <MultiSelect
+                      label="Tags"
+                      options={tagOptions}
+                      selected={field.value || []}
+                      onSelectionChange={field.onChange}
+                      placeholder="Selecionar tags..."
+                      error={errors.tagIds?.message}
+                    />
+                  )}
                 />
               </div>
             </div>
@@ -237,7 +241,7 @@ export const MutateProductModal: React.FC<MutateProductModalProps> = ({
             <Button type="button" onClick={onClose} variant="secondary">
               Cancelar
             </Button>
-            <Button type="submit" isLoading={isLoading}>
+            <Button type="submit" loading={isLoading}>
               {isEditMode ? "Salvar Alterações" : "Criar Produto"}
             </Button>
           </div>

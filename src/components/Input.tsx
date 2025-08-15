@@ -1,8 +1,9 @@
 import React from 'react';
 
-interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+interface InputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'value'> {
   label: string;
   error?: string;
+  value?: string | null;
 }
 
 const Input: React.FC<InputProps> = ({ label, name, id, error, required, ...rest }) => {

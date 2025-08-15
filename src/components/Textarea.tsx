@@ -1,8 +1,9 @@
 import React from 'react';
 
-interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
+interface TextareaProps extends Omit<React.TextareaHTMLAttributes<HTMLTextAreaElement>, 'value'> {
   label: string;
   error?: string;
+  value?: string | null;
 }
 
 const Textarea: React.FC<TextareaProps> = ({ label, name, id, error, required, ...rest }) => {
