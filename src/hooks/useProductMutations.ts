@@ -1,11 +1,12 @@
-import { useCallback } from 'react';
-import { useApi } from './useApi';
-import type { Product } from '../schema/product.schema';
+import { useCallback } from "react";
+import { CreateProductPayload, UpdateProductPayload } from "../schema/product.schema";
+import { Product } from "../types/product.types";
+import { useApi } from "./useApi";
 
 export const useProductMutations = () => {
   const { request, loading, error } = useApi<Product>();
 
-  const createProduct = useCallback(async (productData: Omit<Product, 'id'>) => {
+  const createProduct = useCallback(async (productData: CreateProductPayload) => {
     return await request({
       url: '/product',
       method: 'POST',
@@ -13,7 +14,7 @@ export const useProductMutations = () => {
     });
   }, [request]);
 
-  const updateProduct = useCallback(async (productData: Product) => {
+  const updateProduct = useCallback(async (productData: UpdateProductPayload) => {
     return await request({
       url: `/product/${productData.id}`,
       method: 'PUT',

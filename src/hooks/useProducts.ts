@@ -1,6 +1,6 @@
 
 import { useCallback, useEffect } from 'react';
-import { ProductsApiResponse, ProductType } from '../schema/product.schema';
+import type { ProductsApiResponse, ProductType } from '../types/product.types';
 import { useApi } from './useApi';
 
 interface UseProductsParams {

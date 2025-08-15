@@ -6,12 +6,13 @@ import React, { useState } from 'react';
 import Button from '../components/Button';
 import Chip from '../components/Chip';
 import DataTable from '../components/DataTable';
-import { MutateBasketProductModal } from '../components/product/MutateBasketProductModal';
-import { MutateSingleProductModal } from '../components/product/MutateSingleProductModal';
 import { useProductMutations } from '../hooks/useProductMutations';
 import { useProducts } from '../hooks/useProducts';
-import type { Product, ProductType } from '../schema/product.schema';
+import type { CreateProductPayload, UpdateProductPayload } from '../schema/product.schema';
+import type { Product, ProductType } from '../types/product.types';
 import { getProductStatusChipProps } from '../utils/productStatusUtils';
+import { MutateBasketProductModal } from '../components/product/MutateBasketProductModal';
+import { MutateSingleProductModal } from '../components/product/MutateSingleProductModal';
 
 const AdminProducts: React.FC = () => {
   const [globalFilter, setGlobalFilter] = React.useState('');
@@ -35,7 +36,7 @@ const AdminProducts: React.FC = () => {
     type: activeTab,
   });
 
-  const { createProduct, updateProduct, deleteProduct, isLoading } = useProductMutations();
+  const { createProduct, updateProduct, isLoading } = useProductMutations();
 
   const columnHelper = createColumnHelper<Product>();
 
@@ -83,12 +84,12 @@ const AdminProducts: React.FC = () => {
     setCreateProductType(null);
   };
 
-  const handleSave = async (data: any) => {
+  const handleSave = async (data: CreateProductPayload | UpdateProductPayload) => {
     try {
-      if (selectedProduct) {
-        await updateProduct({ ...data, id: selectedProduct.id });
+      if ('id' in data && data.id) {
+        await updateProduct(data);
       } else {
-        await createProduct(data);
+        await createProduct(data as CreateProductPayload);
       }
       refetch();
       handleCloseModals();
