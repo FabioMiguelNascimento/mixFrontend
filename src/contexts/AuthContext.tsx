@@ -1,6 +1,8 @@
 
-import { createContext, useState, useEffect, useContext } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 import { z } from 'zod';
+import api from '../services/api';
+
 
 export enum UserRole {
   ADMIN = 'ADMIN',
@@ -11,21 +13,23 @@ export enum UserRole {
 
 
 const UserDataSchema = z.object({
-  id: z.uuid(),
+  id: z.string(),
   name: z.string(),
-  email: z.email(),
+  email: z.string(),
   role: z.enum(UserRole),
-  token: z.string(),
+  accessToken: z.string(),
+  refreshToken: z.string(),
 });
 
 export type UserData = z.infer<typeof UserDataSchema>;
 
 interface AuthContextType {
   isAuthenticated: boolean;
-  user: Omit<UserData, 'token'> | null;
+  user: Omit<UserData, 'accessToken' | 'refreshToken'> | null;
   token: string | null;
   login: (userData: UserData) => void;
   logout: () => void;
+  refreshAccessToken: () => Promise<string | null>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -79,10 +83,28 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setUserData(null);
   };
 
+  const refreshAccessToken = async () => {
+    try {
+      const response = await api.post('/auth/refresh', { refreshToken: userData?.refreshToken });
+      const { accessToken } = response.data.data;
+      
+      if (userData) {
+        const newUserData = { ...userData, accessToken };
+        setUserData(newUserData);
+        localStorage.setItem('userData', JSON.stringify(newUserData));
+        return accessToken;
+      }
+      return null;
+    } catch (error) {
+      logout();
+      return null;
+    }
+  };
+
   const user = userData ? { id: userData.id, name: userData.name, email: userData.email, role: userData.role } : null;
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated: !!userData, user, token: userData?.token || null, login, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated: !!userData, user, token: userData?.accessToken || null, login, logout, refreshAccessToken }}>
       {children}
     </AuthContext.Provider>
   );

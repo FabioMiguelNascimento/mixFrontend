@@ -6,12 +6,14 @@ import { z } from 'zod';
 import { type UserData, useAuth, UserRole } from '../contexts/AuthContext';
 
 const loginSchema = z.object({
-  email: z.email("Email inválido"),
+  email: z.string().email("Email inválido"),
   password: z.string().min(1, "A senha é obrigatória"),
 });
 
 interface LoginApiResponse {
   data: UserData;
+  code: number;
+  message: string;
 }
 
 export const useLogin = () => {
