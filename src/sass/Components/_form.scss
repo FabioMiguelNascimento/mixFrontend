@@ -66,3 +66,18 @@ textarea {
   min-height: 120px;
   resize: vertical; 
 }
+
+.error-message {
+  color: theme(accent-red);
+  font-size: 0.75rem;
+  padding-left: 0.2rem;
+  margin-top: -0.25rem;
+}
+
+input.input--error,
+textarea.textarea--error {
+  border-color: theme(accent-red);
+  &:focus-visible {
+    outline: 2px solid theme(accent-red);
+  }
+}

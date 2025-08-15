@@ -21,6 +21,7 @@ interface MultiSelectProps {
   className?: string
   disabled?: boolean
   variant?: "default" | "compact" | "pills"
+  error?: string;
 }
 
 export function MultiSelect({
@@ -34,6 +35,7 @@ export function MultiSelect({
   className,
   disabled = false,
   variant = "default",
+  error,
 }: MultiSelectProps) {
   const [open, setOpen] = React.useState(false)
   const [searchValue, setSearchValue] = React.useState("")
@@ -145,7 +147,7 @@ export function MultiSelect({
   return (
     <div className="form-group">
       <label>{label}</label>
-      <div className={`multi-select ${className || ''}`} ref={dropdownRef}>
+      <div className={`multi-select ${className || ''} ${error ? 'multi-select--error' : ''}`} ref={dropdownRef}>
         <Button
           role="combobox"
           aria-expanded={open}
@@ -228,6 +230,7 @@ export function MultiSelect({
           </div>
         )}
       </div>
+      {error && <div className="error-message">{error}</div>}
     </div>
   )
 }

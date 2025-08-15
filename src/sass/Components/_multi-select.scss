@@ -303,4 +303,13 @@
     box-sizing: border-box;
     text-align: left;
   }
+
+  &--error {
+    .multi-select__trigger {
+      border-color: theme(accent-red);
+      &:focus-visible {
+        outline: 2px solid theme(accent-red);
+      }
+    }
+  }
 }

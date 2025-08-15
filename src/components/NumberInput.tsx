@@ -9,6 +9,7 @@ interface NumberInputProps extends Omit<React.InputHTMLAttributes<HTMLInputEleme
   allowDecimals?: boolean;
   decimalPlaces?: number;
   decimalSeparator?: '.' | ',';
+  error?: string;
 }
 
 const NumberInput: React.FC<NumberInputProps> = ({
@@ -20,6 +21,8 @@ const NumberInput: React.FC<NumberInputProps> = ({
   allowDecimals = true,
   decimalPlaces = 2,
   decimalSeparator = '.',
+  error,
+  required,
   ...rest
 }) => {
   const [displayValue, setDisplayValue] = useState<string>('');
@@ -35,10 +38,10 @@ const NumberInput: React.FC<NumberInputProps> = ({
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let inputValue = e.target.value;
 
-    let sanitizedValue = inputValue.replace(new RegExp(`[^0-9\\${decimalSeparator}]`, 'g'), '');
+    let sanitizedValue = inputValue.replace(new RegExp(`[^0-9\${decimalSeparator}]`, 'g'), '');
 
     if (!allowDecimals) {
-      sanitizedValue = sanitizedValue.replace(new RegExp(`\\${decimalSeparator}`, 'g'), '');
+      sanitizedValue = sanitizedValue.replace(new RegExp(`\${decimalSeparator}`, 'g'), '');
     } else {
       const parts = sanitizedValue.split(decimalSeparator);
       if (parts.length > 2) {
@@ -145,9 +148,12 @@ const NumberInput: React.FC<NumberInputProps> = ({
         onChange={handleChange}
         onBlur={handleBlur}
         onKeyDown={handleKeyDown}
+        className={error ? 'input--error' : ''}
       />
+      {error && <div className="error-message">{error}</div>}
     </div>
   );
 };
+
 
 export default NumberInput;
