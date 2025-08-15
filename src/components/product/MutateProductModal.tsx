@@ -212,7 +212,7 @@ export const MutateProductModal: React.FC<MutateProductModalProps> = ({
                     <MultiSelect
                       label="Categorias"
                       options={categoryOptions}
-                      selected={field.value}
+                      selected={field.value || []}
                       onSelectionChange={field.onChange}
                       placeholder="Selecionar categorias..."
                       error={errors.categoryIds?.message}
