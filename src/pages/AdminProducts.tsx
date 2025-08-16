@@ -1,7 +1,7 @@
 
 import { createColumnHelper } from '@tanstack/react-table';
 import { format } from 'date-fns';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import Button from '../components/Button';
 import Chip from '../components/Chip';
@@ -13,6 +13,8 @@ import type { Product, ProductType } from '../types/product.types';
 import { getProductStatusChipProps } from '../utils/productStatusUtils';
 import { MutateBasketProductModal } from '../components/product/MutateBasketProductModal';
 import { MutateSingleProductModal } from '../components/product/MutateSingleProductModal';
+import { useProductImages } from '../hooks/useProductImages';
+import { useProductImageUrls } from '../hooks/useProductImageUrls';
 
 const AdminProducts: React.FC = () => {
   const [globalFilter, setGlobalFilter] = React.useState('');
@@ -26,6 +28,7 @@ const AdminProducts: React.FC = () => {
   const [isMutateModalOpen, setIsMutateModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [createProductType, setCreateProductType] = useState<ProductType | null>(null);
+  const [productsWithUrls, setProductsWithUrls] = useState<Product[]>([]);
 
   const { products, totalProducts, loading, error, refetch } = useProducts({
     page: pagination.pageIndex + 1,
@@ -37,6 +40,29 @@ const AdminProducts: React.FC = () => {
   });
 
   const { createProduct, updateProduct, isLoading } = useProductMutations();
+  const { uploadImages } = useProductImages();
+  const { fetchImageUrls } = useProductImageUrls();
+
+  useEffect(() => {
+    if (products.length > 0) {
+      const keys = products.flatMap(p => p.images.map(i => i.key));
+      if (keys.length > 0) {
+        fetchImageUrls(keys).then(urlMap => {
+          if (urlMap) {
+            const updatedProducts = products.map(p => ({
+              ...p,
+              images: p.images.map(i => ({ ...i, url: urlMap[i.key] || undefined })),
+            }));
+            setProductsWithUrls(updatedProducts);
+          }
+        });
+      } else {
+        setProductsWithUrls(products);
+      }
+    } else {
+        setProductsWithUrls([]);
+    }
+  }, [products, fetchImageUrls]);
 
   const columnHelper = createColumnHelper<Product>();
 
@@ -84,13 +110,26 @@ const AdminProducts: React.FC = () => {
     setCreateProductType(null);
   };
 
-  const handleSave = async (data: CreateProductPayload | UpdateProductPayload) => {
+  const handleSave = async (data: CreateProductPayload | UpdateProductPayload, newImages: File[]) => {
     try {
+      let productId: string | undefined;
+
       if ('id' in data && data.id) {
         await updateProduct(data);
+        productId = data.id;
       } else {
-        await createProduct(data as CreateProductPayload);
+        const newProductResponse = await createProduct(data as CreateProductPayload);
+        if (newProductResponse && newProductResponse.data) {
+          productId = newProductResponse.data.id;
+        }
       }
+
+      if (productId && newImages.length > 0) {
+        uploadImages(productId, newImages).then(() => {
+          refetch();
+        });
+      }
+
       refetch();
       handleCloseModals();
     } catch (e) {
@@ -123,7 +162,7 @@ const AdminProducts: React.FC = () => {
       </div>
 
       <DataTable
-        data={products}
+        data={productsWithUrls}
         columns={columns}
         loading={loading}
         error={error}

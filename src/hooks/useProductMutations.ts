@@ -2,9 +2,10 @@ import { useCallback } from "react";
 import { CreateProductPayload, UpdateProductPayload } from "../schema/product.schema";
 import { Product } from "../types/product.types";
 import { useApi } from "./useApi";
+import { ApiResponse } from "../types/api.types";
 
 export const useProductMutations = () => {
-  const { request, loading, error } = useApi<Product>();
+  const { request, loading, error } = useApi<ApiResponse<Product>>();
 
   const createProduct = useCallback(async (productData: CreateProductPayload) => {
     return await request({
@@ -17,10 +18,10 @@ export const useProductMutations = () => {
   const updateProduct = useCallback(async (productData: UpdateProductPayload) => {
     return await request({
       url: `/product/${productData.id}`,
-      method: 'PUT',
+      method: 'PATCH',
       data: productData,
     });
-  }, [request]);
+}, [request]);
 
   const deleteProduct = useCallback(async (productId: string) => {
     return await request({

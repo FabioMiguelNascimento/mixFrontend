@@ -1,20 +1,20 @@
 import { useCallback } from 'react';
-import { ProductImage } from '../schema/product.schema';
+import { ProductImage } from '../types/product.types';
 import { useApi } from './useApi';
 
 interface UseProductImagesResult {
-  uploadImage: (productId: string, file: File) => Promise<ProductImage | undefined>;
+  uploadImages: (productId: string, files: File[]) => Promise<ProductImage[] | undefined>;
   deleteImage: (imageId: string) => Promise<void>;
   loading: boolean;
   error: Error | null;
 }
 
 export const useProductImages = (): UseProductImagesResult => {
-  const { data, error, loading, request } = useApi<ProductImage>(); 
+  const { data, error, loading, request } = useApi<ProductImage[]>(); 
 
-  const uploadImage = useCallback(async (productId: string, file: File) => {
+  const uploadImages = useCallback(async (productId: string, files: File[]) => {
     const formData = new FormData();
-    formData.append('image', file);
+    files.forEach(file => formData.append('images', file));
 
     const response = await request({
       url: `/product/images/${productId}`,
@@ -25,7 +25,7 @@ export const useProductImages = (): UseProductImagesResult => {
       },
     });
 
-    return response?.data?.data ? { ...response.data.data, url: URL.createObjectURL(file) } : undefined;
+    return response?.data;
   }, [request]);
 
   const deleteImage = useCallback(async (imageId: string) => {
@@ -36,7 +36,7 @@ export const useProductImages = (): UseProductImagesResult => {
   }, [request]);
 
   return {
-    uploadImage,
+    uploadImages,
     deleteImage,
     loading,
     error,

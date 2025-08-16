@@ -103,8 +103,7 @@ const ImageManager: React.FC<ImageManagerProps> = ({ isOpen, onClose, initialIma
   };
 
   const handleSave = () => {
-    const imagesToSave = managedImages.map(({ file, ...img }) => img);
-    onSave(imagesToSave);
+    onSave(managedImages);
     onClose();
   };
 

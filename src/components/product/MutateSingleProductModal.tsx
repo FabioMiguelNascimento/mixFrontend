@@ -78,13 +78,16 @@ export const MutateSingleProductModal: React.FC<BaseProductModalProps> = ({
   }, [product, isOpen, reset, modalState.setImages]);
 
   const handleFormSubmit = (data: SingleProductFormValues) => {
+    const newImages = modalState.images.filter(img => img.file);
+    const existingImages = modalState.images.filter(img => !img.file);
+
     const payload: CreateProductPayload | UpdateProductPayload = {
       ...data,
       ...(product?.id && { id: product.id }),
-      images: modalState.images.map((img) => ({ key: img.key })),
+      images: existingImages.map((img) => ({ key: img.key })),
       finalPrice: finalPrice,
     };
-    onSave(payload);
+    onSave(payload, newImages.map(img => img.file as File));
   };
 
   return (

@@ -16,7 +16,7 @@ import Textarea from "../Textarea";
 interface BaseProductModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (data: CreateProductPayload | UpdateProductPayload) => void;
+  onSave: (data: CreateProductPayload | UpdateProductPayload, newImages: File[]) => void;
   product: Product | null;
   isLoading: boolean;
 }
