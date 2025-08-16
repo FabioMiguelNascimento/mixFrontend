@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { FaCamera, FaStar, FaTrash } from 'react-icons/fa';
-import { ProductImage } from '../schema/product.schema';
+import { FaCamera, FaFolderOpen, FaGoogleDrive, FaPlus, FaStar, FaTrash } from 'react-icons/fa';
+import DropdownWrapper from './DropdownWrapper';
 import Modal from './Modal';
 
 import {
@@ -20,6 +20,8 @@ import {
   useSortable,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { MdBrowseGallery } from 'react-icons/md';
+import { ProductImage } from '../types/product.types';
 
 interface SortableImageProps {
   image: ProductImage;
@@ -136,6 +138,19 @@ const ImageManager: React.FC<ImageManagerProps> = ({ isOpen, onClose, initialIma
     setManagedImages(reorderedImages);
   };
 
+  const addImageOptions = [
+    { value: 'device', label: 'Abrir do dispositivo', icon: <FaFolderOpen /> },
+    { value: 'camera', label: 'Tirar foto', icon: <FaCamera /> },
+    { value: 'drive', label: 'Pegar do Drive', icon: <FaGoogleDrive /> },
+    { value: 'allPhotos', label: 'Todas as fotos', icon: <MdBrowseGallery /> }
+  ];
+
+  const handleAddImageSelect = (value: string) => {
+    if (value === 'device') {
+      fileInputRef.current?.click();
+    }
+  };
+
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Gerenciar Imagens do Produto">
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
@@ -178,7 +193,11 @@ const ImageManager: React.FC<ImageManagerProps> = ({ isOpen, onClose, initialIma
               style={{ display: 'none' }}
               accept="image/png, image/jpeg, image/webp"
             />
-            <button onClick={() => fileInputRef.current?.click()} className="add-button">Adicionar Novas Imagens</button>
+            <DropdownWrapper
+              options={addImageOptions}
+              onSelect={handleAddImageSelect}
+              trigger={<button className="add-button"><FaPlus /> Adicionar Novas Imagens</button>}
+            />
             <div>
               <button onClick={onClose} className="cancel-button">Cancelar</button>
               <button onClick={handleSave} className="save-button">Salvar</button>
@@ -202,7 +221,7 @@ export const ImageManagerInput: React.FC<ImageManagerInputProps> = ({ images, on
         <div className="image-manager-input" onClick={onOpenManager}>
             {primaryImage ? (
                 <>
-                    <img src={primaryImage.url} alt={primaryImage.altText || 'Imagem Principal'} />
+                    <img src={primaryImage.url} alt={'Imagem Principal'} />
                     {images.length > 1 && (
                         <div className="image-count-badge">+{images.length - 1}</div>
                     )}
