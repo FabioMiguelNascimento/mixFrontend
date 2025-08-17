@@ -1,85 +1,90 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState } from 'react';
+import {
+  useFloating,
+  useClick,
+  useDismiss,
+  useRole,
+  useInteractions,
+  FloatingPortal,
+  offset,
+  flip,
+  shift,
+} from '@floating-ui/react';
 
 interface DropdownOption {
   value: string;
   label: string;
-  icon?: React.ReactNode; // Add optional icon prop
+  icon?: React.ReactNode;
 }
 
 interface DropdownWrapperProps {
   trigger: React.ReactNode;
   options: DropdownOption[];
   onSelect: (value: string) => void;
-  isOpen?: boolean; // Optional prop to control open state externally
-  onOpenChange?: (isOpen: boolean) => void; // Callback for external control
 }
 
 const DropdownWrapper: React.FC<DropdownWrapperProps> = ({
   trigger,
   options,
   onSelect,
-  isOpen: controlledIsOpen,
-  onOpenChange,
 }) => {
-  const [internalIsOpen, setInternalIsOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const [isOpen, setIsOpen] = useState(false);
 
-  const isOpen = controlledIsOpen !== undefined ? controlledIsOpen : internalIsOpen;
+  const { x, y, strategy, refs, context } = useFloating({
+    open: isOpen,
+    onOpenChange: setIsOpen,
+    middleware: [offset(5), flip(), shift({ padding: 8 })],
+    placement: 'bottom-start',
+  });
 
-  const setIsOpen = (newIsOpen: boolean) => {
-    if (controlledIsOpen === undefined) {
-      setInternalIsOpen(newIsOpen);
-    }
-    onOpenChange?.(newIsOpen);
-  };
+  const click = useClick(context);
+  const dismiss = useDismiss(context);
+  const role = useRole(context);
 
-  const handleTriggerClick = () => {
-    setIsOpen(!isOpen);
-  };
+  const { getReferenceProps, getFloatingProps } = useInteractions([
+    click,
+    dismiss,
+    role,
+  ]);
 
   const handleOptionClick = (value: string) => {
     onSelect(value);
-    setIsOpen(false); // Close dropdown after selection
+    setIsOpen(false);
   };
 
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
-    };
-
-    if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-    } else {
-      document.removeEventListener('mousedown', handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [isOpen, setIsOpen]);
-
   return (
-    <div className="dropdown-wrapper" ref={dropdownRef}>
-      <div className="dropdown-trigger" onClick={handleTriggerClick}>
+    <>
+      <div className="dropdown-trigger" ref={refs.setReference} {...getReferenceProps()}>
         {trigger}
       </div>
-      {isOpen && (
-        <div className="dropdown-content">
-          {options.map((option) => (
-            <div
-              key={option.value}
-              className="dropdown-option"
-              onClick={() => handleOptionClick(option.value)}
-            >
-              {option.icon && <span className="dropdown-option__icon">{option.icon}</span>}
-              {option.label}
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
+      <FloatingPortal>
+        {isOpen && (
+          <div
+            className="dropdown-content"
+            ref={refs.setFloating}
+            style={{
+              position: strategy,
+              top: y ?? 0,
+              left: x ?? 0,
+              width: 'max-content',
+              zIndex: 1050,
+            }}
+            {...getFloatingProps()}
+          >
+            {options.map((option) => (
+              <div
+                key={option.value}
+                className="dropdown-option"
+                onClick={() => handleOptionClick(option.value)}
+              >
+                {option.icon && <span className="dropdown-option__icon">{option.icon}</span>}
+                {option.label}
+              </div>
+            ))}
+          </div>
+        )}
+      </FloatingPortal>
+    </>
   );
 };
 
