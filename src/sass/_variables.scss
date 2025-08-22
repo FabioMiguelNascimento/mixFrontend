@@ -1,59 +1,49 @@
 :root {
-  // Light Theme
-  // Primary
-  --primary-main: #4CAF50; // Verde Mix
-  --primary-dark: #388E3C; // Verde Escuro
-  --primary-light: #81C784; // Verde Claro
-  --primary-background: #E8F5E8; // Verde Muito Claro
+  --mix-primary-main: #4CAF50;
+  --mix-primary-dark: #388E3C;
+  --mix-primary-light: #81C784;
+  --mix-primary-background: #E8F5E8;
 
-  // Secondary & Accents
-  --accent-orange: #FF9800; // Laranja Accent
-  --accent-orange-hover: #E68900; // Laranja Accent Hover
-  --accent-blue: #2196F3; // Azul Confiança
-  --accent-purple: #9C27B0; // Roxo Premium
-  --accent-red: #F44336; // Vermelho Urgência
-  --accent-red-hover: #DB3C2F; // Vermelho Urgência Hover
+  --mix-accent-orange: #FF9800;
+  --mix-accent-orange-hover: #E68900;
+  --mix-accent-blue: #2196F3;
+  --mix-accent-purple: #9C27B0;
+  --mix-accent-red: #F44336;
+  --mix-accent-red-hover: #DB3C2F;
 
-  // Neutral
-  --text-primary: #000000; // Texto Principal
-  --text-secondary: #424242; // Texto Secundário
-  --text-auxiliary: #757575; // Texto Auxiliar
-  --border: #E0E0E0; // Bordas
-  --background: #FFFFFF; // Background
-  --background-soft: #FAFAFA; // Background Suave
-  --neutral-background-hover: #F0F0F0; // Background Suave Hover
-  --text-button-hover: #E0F0E0; // Text Button Hover
+  --mix-text-primary: #000000;
+  --mix-text-secondary: #424242;
+  --mix-text-auxiliary: #757575;
+  --mix-border: #E0E0E0;
+  --mix-background: #FFFFFF;
+  --mix-background-soft: #FAFAFA;
+  --mix-neutral-background-hover: #F0F0F0;
+  --mix-text-button-hover: #E0F0E0;
 
-  // Shadows
-  --primary-main-shadow: rgba(76, 175, 80, 0.25);
+  --mix-primary-main-shadow: rgba(76, 175, 80, 0.25);
 }
 
 [data-theme='dark'] {
-  // Dark Theme
-  // Primary
-  --primary-main: #66BB6A; // Verde Mix Dark
-  --primary-dark: #4CAF50; // Verde Intenso
-  --primary-light: #388E3C; // Verde Suave
-  --primary-background: #1B5E20; // Verde Escuro
+  --mix-primary-main: #66BB6A;
+  --mix-primary-dark: #4CAF50;
+  --mix-primary-light: #388E3C;
+  --mix-primary-background: #1B5E20;
 
-  // Secondary & Accents
-  --accent-orange: #FFB74D; // Laranja Suave
-  --accent-blue: #64B5F6; // Azul Suave
-  --accent-purple: #BA68C8; // Roxo Suave
-  --accent-red: #EF5350; // Vermelho Suave
-  --accent-red-hover: #F2726F; // Vermelho Suave Hover
+  --mix-accent-orange: #FFB74D;
+  --mix-accent-blue: #64B5F6;
+  --mix-accent-purple: #BA68C8;
+  --mix-accent-red: #EF5350;
+  --mix-accent-red-hover: #F2726F;
 
-  // Neutral
-  --text-primary: #FFFFFF; // Texto Principal
-  --text-secondary: #E0E0E0; // Texto Secundário
-  --text-auxiliary: #BDBDBD; // Texto Auxiliar
-  --border: #424242; // Bordas
-  --background: #121212; // Background
-  --background-soft: #1E1E1E; // Background Elevado
-  --background-section: #2C2C2C; // Background Seção
-  --neutral-background-hover: #262626; // Background Elevado Hover
-  --text-button-hover: #202020; // Text Button Hover
+  --mix-text-primary: #FFFFFF;
+  --mix-text-secondary: #E0E0E0;
+  --mix-text-auxiliary: #BDBDBD;
+  --mix-border: #424242;
+  --mix-background: #121212;
+  --mix-background-soft: #1E1E1E;
+  --mix-background-section: #2C2C2C;
+  --mix-neutral-background-hover: #262626;
+  --mix-text-button-hover: #202020;
 
-  // Shadows
   --primary-light-shadow: rgba(56, 142, 60, 0.25);
 }
