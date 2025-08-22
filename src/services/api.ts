@@ -2,8 +2,10 @@
 import axios from 'axios';
 import type { UserData } from '../contexts/AuthContext';
 
+const baseURL = import.meta.env.VITE_API_BASE_URL
+
 const api = axios.create({
-  baseURL: 'http://localhost:3000/api',
+  baseURL: baseURL,
 });
 
 api.interceptors.request.use(
@@ -37,7 +39,7 @@ api.interceptors.response.use(
         const storedUserData = localStorage.getItem('userData');
         if (storedUserData) {
           const userData: UserData = JSON.parse(storedUserData);
-          const response = await axios.post('http://localhost:3000/api/auth/refresh', { refreshToken: userData.refreshToken });
+          const response = await axios.post(`${baseURL}/auth/refresh`, { refreshToken: userData.refreshToken });
           const { accessToken } = response.data.data;
           const newUserData = { ...userData, accessToken };
           localStorage.setItem('userData', JSON.stringify(newUserData));

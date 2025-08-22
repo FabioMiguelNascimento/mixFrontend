@@ -22,9 +22,14 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import { MdBrowseGallery } from 'react-icons/md';
 import { ProductImage } from '../types/product.types';
+import CameraModal from './CameraModal';
+
+interface EditableProductImage extends ProductImage {
+  file?: File;
+}
 
 interface SortableImageProps {
-  image: ProductImage;
+  image: EditableProductImage;
   onSelect: () => void;
   onDelete: () => void;
   onSetPrimary: () => void;
@@ -64,12 +69,13 @@ interface ImageManagerProps {
   isOpen: boolean;
   onClose: () => void;
   initialImages: ProductImage[];
-  onSave: (images: ProductImage[]) => void;
+  onSave: (images: EditableProductImage[]) => void;
 }
 
 const ImageManager: React.FC<ImageManagerProps> = ({ isOpen, onClose, initialImages, onSave }) => {
-  const [managedImages, setManagedImages] = useState<ProductImage[]>([]);
-  const [selectedImage, setSelectedImage] = useState<ProductImage | null>(null);
+  const [managedImages, setManagedImages] = useState<EditableProductImage[]>([]);
+  const [selectedImage, setSelectedImage] = useState<EditableProductImage | null>(null);
+  const [isCameraModalOpen, setCameraModalOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const sensors = useSensors(
@@ -113,18 +119,28 @@ const ImageManager: React.FC<ImageManagerProps> = ({ isOpen, onClose, initialIma
     const files = event.target.files;
     if (!files) return;
 
-    const newImages: ProductImage[] = Array.from(files).map((file, index) => ({
+    const newImages: EditableProductImage[] = Array.from(files).map((file, index) => ({
       id: `new-${Date.now()}-${index}`,
       key: `new-key-${Date.now()}-${index}`,
       url: URL.createObjectURL(file),
-      order: managedImages.length + index,
       file: file,
     }));
 
     setManagedImages(prev => [...prev, ...newImages]);
   };
 
-  const handleDelete = (imageToDelete: ProductImage) => {
+  const handleCameraCapture = (file: File) => {
+    const newImage: EditableProductImage = {
+      id: `camera-${Date.now()}`,
+      key: `camera-key-${Date.now()}`,
+      url: URL.createObjectURL(file),
+      file: file,
+    };
+
+    setManagedImages(prev => [...prev, newImage]);
+  };
+
+  const handleDelete = (imageToDelete: EditableProductImage) => {
     const remainingImages = managedImages.filter(img => img.id !== imageToDelete.id);
     setManagedImages(remainingImages);
 
@@ -133,7 +149,7 @@ const ImageManager: React.FC<ImageManagerProps> = ({ isOpen, onClose, initialIma
     }
   };
 
-  const handleSetPrimary = (imageToSet: ProductImage) => {
+  const handleSetPrimary = (imageToSet: EditableProductImage) => {
     const reorderedImages = [imageToSet, ...managedImages.filter(img => img.id !== imageToSet.id)];
     setManagedImages(reorderedImages);
   };
@@ -148,6 +164,10 @@ const ImageManager: React.FC<ImageManagerProps> = ({ isOpen, onClose, initialIma
   const handleAddImageSelect = (value: string) => {
     if (value === 'device') {
       fileInputRef.current?.click();
+    }
+
+    if (value === 'camera') {
+      setCameraModalOpen(true);
     }
   };
 
@@ -205,6 +225,14 @@ const ImageManager: React.FC<ImageManagerProps> = ({ isOpen, onClose, initialIma
           </div>
         </div>
       </DndContext>
+
+      { isCameraModalOpen && 
+        <CameraModal 
+          isOpen={isCameraModalOpen}
+          onCapture={handleCameraCapture}
+          onClose={() => setCameraModalOpen(false)}
+        />
+      }
     </Modal>
   );
 };
