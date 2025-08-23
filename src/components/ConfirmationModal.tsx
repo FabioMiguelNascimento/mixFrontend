@@ -1,5 +1,5 @@
 import React from 'react';
-import Button from './Button';
+import { Button } from '@/components/ui/button';
 import Modal from './Modal'; // Import the generic Modal component
 
 interface ConfirmationModalProps {
@@ -27,7 +27,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
       <p>{message}</p>
       <div className="confirmation-modal-actions">
         <Button variant="secondary" onClick={onClose}>Cancelar</Button>
-        <Button variant="primary" onClick={onConfirm}>Confirmar</Button>
+        <Button variant="default" onClick={onConfirm}>Confirmar</Button>
       </div>
     </Modal>
   );

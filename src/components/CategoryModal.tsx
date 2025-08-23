@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Modal from './Modal';
-import Button from './Button';
+import { Button } from '@/components/ui/button';
 import type { Category } from '../schema/category.schema';
 
 interface CategoryModalProps {
@@ -55,8 +55,8 @@ const CategoryModal: React.FC<CategoryModalProps> = ({ isOpen, onClose, category
           />
         </div>
         <div className="category-modal-actions">
-          <Button onClick={handleSave} variant="primary">Salvar</Button>
-          {category && <Button onClick={handleDelete} variant="danger">Excluir</Button>}
+          <Button onClick={handleSave} variant="default">Salvar</Button>
+          {category && <Button onClick={handleDelete} variant="destructive">Excluir</Button>}
           <Button onClick={onClose} variant="secondary">Cancelar</Button>
         </div>
       </div>

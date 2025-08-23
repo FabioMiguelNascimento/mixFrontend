@@ -1,7 +1,7 @@
 import { type ColumnDef, type PaginationState, type SortingState, useReactTable, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, flexRender } from "@tanstack/react-table";
 import React from "react";
 import { MdArrowUpward, MdArrowDownward } from "react-icons/md";
-import Button from "./Button";
+import { Button } from "@/components/ui/button";
 import Spinner from "./Spinner";
 
 

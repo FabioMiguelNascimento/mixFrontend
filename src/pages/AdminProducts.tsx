@@ -3,7 +3,7 @@ import { createColumnHelper } from '@tanstack/react-table';
 import { format } from 'date-fns';
 import React, { useState, useEffect } from 'react';
 
-import Button from '../components/Button';
+import { Button } from '@/components/ui/button';
 import Chip from '../components/Chip';
 import DataTable from '../components/DataTable';
 import { useProductMutations } from '../hooks/useProductMutations';
@@ -146,19 +146,19 @@ const AdminProducts: React.FC = () => {
         </Button>
       </div>
 
-      <div className="tabs">
-        <button 
-          className={`tab-button ${activeTab === 'SINGLE' ? 'active' : ''}`}
+      <div className="tabs flex gap-2">
+        <Button 
+          variant={activeTab === 'SINGLE' ? 'default' : 'secondary'}
           onClick={() => setActiveTab('SINGLE')}
         >
           Produtos
-        </button>
-        <button 
-          className={`tab-button ${activeTab === 'BASKET' ? 'active' : ''}`}
+        </Button>
+        <Button 
+          variant={activeTab === 'BASKET' ? 'default' : 'secondary'}
           onClick={() => setActiveTab('BASKET')}
         >
           Cestas
-        </button>
+        </Button>
       </div>
 
       <DataTable

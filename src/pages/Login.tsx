@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useLogin } from '../hooks/useLogin';
 import { useAuth, UserRole } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -58,9 +59,9 @@ const Login: React.FC = () => {
           </p>
         )}
 
-        <button type="submit" disabled={loading}>
+        <Button variant="outline" type="submit" disabled={loading}>
           {loading ? 'Entrando...' : 'Entrar'}
-        </button>
+        </Button>
       </form>
     </div>
   );

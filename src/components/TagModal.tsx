@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Modal from './Modal';
-import Button from './Button';
+import { Button } from '@/components/ui/button';
 import type { Tag } from '../schema/tag.schema';
 
 interface TagModalProps {
@@ -55,8 +55,8 @@ const TagModal: React.FC<TagModalProps> = ({ isOpen, onClose, tag, onSave, onDel
           />
         </div>
         <div className="tag-modal-actions">
-          <Button onClick={handleSave} variant="primary">Salvar</Button>
-          {tag && <Button onClick={handleDelete} variant="danger">Excluir</Button>}
+          <Button onClick={handleSave} variant="default">Salvar</Button>
+          {tag && <Button onClick={handleDelete} variant="destructive">Excluir</Button>}
           <Button onClick={onClose} variant="secondary">Cancelar</Button>
         </div>
       </div>

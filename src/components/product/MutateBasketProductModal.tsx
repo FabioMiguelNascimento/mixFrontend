@@ -4,12 +4,13 @@ import { useForm } from "react-hook-form";
 import { useProducts } from "../../hooks/useProducts";
 import { basketProductFormSchema, BasketProductFormValues, CreateProductPayload, UpdateProductPayload } from "../../schema/product.schema";
 import { SelectOption } from "../../types/product.types";
-import Button from "../Button";
+import { Button } from "@/components/ui/button";
 import ImageManager, { ImageManagerInput } from "../ImageManager";
 import Modal from "../Modal";
 import { MultiSelect } from "../MultiSelect";
 import NumberInput from "../NumberInput";
 import { BaseProductModalProps, CommonProductFields, useProductModal } from "./BaseProductModal";
+import { Loader2 } from "lucide-react";
 
 
 interface BasketItemsManagerProps {
@@ -226,7 +227,8 @@ export const MutateBasketProductModal: React.FC<BaseProductModalProps> = ({
             <Button type="button" onClick={onClose} variant="secondary">
               Cancelar
             </Button>
-            <Button type="submit" loading={isLoading}>
+            <Button type="submit" disabled={isLoading}>
+              {isLoading && <Loader2 className="animate-spin" />}
               {isEditMode ? "Salvar Alterações" : "Criar Cesta"}
             </Button>
           </div>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import Button from './Button';
+import { Button } from '@/components/ui/button';
 import ProfileCircle from './ProfileCircle';
 import SidebarLink from './SidebarLink';
 
@@ -65,7 +65,9 @@ const Sidebar: React.FC<SidebarProps> = ({ isExpanded, setIsExpanded }) => {
       </nav>
 
       <div className="sidebar-functions">
-        <Button variant="secondary" onClick={handleToggleSidebar} icon={isExpanded ? <MdMenu /> : <MdMenu />} size="sm" />
+        <Button variant="secondary" onClick={handleToggleSidebar} size="sm">
+          <MdMenu />
+        </Button>
       </div>
     </aside>
   );

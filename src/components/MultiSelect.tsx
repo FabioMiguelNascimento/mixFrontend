@@ -1,8 +1,6 @@
-"use client"
-
-import * as React from "react"
-import { IoCheckmark, IoClose, IoChevronDown, IoSearch } from "react-icons/io5"
-import Button from "./Button"
+import { Button } from "@/components/ui/button"
+import { useState, useRef, useEffect } from "react"
+import { IoCheckmark, IoChevronDown, IoClose, IoSearch } from "react-icons/io5"
 
 interface Option {
   value: string
@@ -37,9 +35,9 @@ export function MultiSelect({
   variant = "default",
   error,
 }: MultiSelectProps) {
-  const [open, setOpen] = React.useState(false)
-  const [searchValue, setSearchValue] = React.useState("")
-  const dropdownRef = React.useRef<HTMLDivElement>(null)
+  const [open, setOpen] = useState(false)
+  const [searchValue, setSearchValue] = useState("")
+  const dropdownRef = useRef<HTMLDivElement>(null)
 
   const selectedOptions = options.filter((option) => selected.includes(option.value))
   const availableOptions = options.filter((option) => option.label.toLowerCase().includes(searchValue.toLowerCase()))
@@ -58,7 +56,7 @@ export function MultiSelect({
     onSelectionChange([])
   }
 
-  React.useEffect(() => {
+  useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setOpen(false)
@@ -99,13 +97,14 @@ export function MultiSelect({
             >
               {option.label}
               <Button
+                variant="ghost"
+                size="icon"
                 onClick={(e) => handleRemove(option.value, e)}
                 className="multi-select__selected-item__remove"
                 disabled={disabled}
-                variant="text"
-                size="sm"
-                icon={<IoClose />}
-              />
+              >
+                <IoClose />
+              </Button>
             </div>
           ))}
           {remainingCount > 0 && (
@@ -127,13 +126,14 @@ export function MultiSelect({
           >
             <span className="multi-select__selected-item__text">{option.label}</span>
             <Button
+              variant="ghost"
+              size="icon"
               onClick={(e) => handleRemove(option.value, e)}
               className="multi-select__selected-item__remove"
               disabled={disabled}
-              variant="text"
-              size="sm"
-              icon={<IoClose />}
-            />
+            >
+              <IoClose />
+            </Button>
           </div>
         ))}
         {remainingCount > 0 && (
@@ -149,27 +149,28 @@ export function MultiSelect({
       <label>{label}</label>
       <div className={`multi-select ${className || ''} ${error ? 'multi-select--error' : ''}`} ref={dropdownRef}>
         <Button
+          variant="ghost"
+          size="sm"
           role="combobox"
           aria-expanded={open}
           className={`multi-select__trigger ${disabled ? 'multi-select__trigger--disabled' : ''}`}
           disabled={disabled}
           onClick={() => setOpen(!open)}
-          variant="text"
-          size="sm"
         >
           <div className="multi-select__trigger__content">{renderSelectedItems()}</div>
           <div className="multi-select__trigger__actions">
             {selected.length > 0 && !disabled && (
               <Button
+                variant="ghost"
+                size="icon"
                 onClick={(e) => {
                   e.stopPropagation()
                   handleClearAll()
                 }}
                 className="multi-select__trigger__clear"
-                variant="text"
-                size="sm"
-                icon={<IoClose />}
-              />
+              >
+                <IoClose />
+              </Button>
             )}
             <div className="multi-select__trigger__chevron">
               <IoChevronDown />

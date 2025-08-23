@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import Button from './Button';
+import { Button } from '@/components/ui/button';
 import Modal from './Modal';
 
 interface CameraModalProps {
@@ -142,7 +142,7 @@ const CameraModal: React.FC<CameraModalProps> = ({ isOpen, onClose, onCapture })
         {error ? (
           <div className="camera-error">
             <p>Erro ao acessar a câmera: {error}</p>
-            <Button onClick={startCamera}>Tentar Novamente</Button>
+            <Button variant="default" onClick={startCamera}>Tentar Novamente</Button>
           </div>
         ) : (
           <>
@@ -156,10 +156,10 @@ const CameraModal: React.FC<CameraModalProps> = ({ isOpen, onClose, onCapture })
         )}
         <canvas ref={canvasRef} style={{ display: 'none' }} />
         <div className="camera-controls">
-          <Button onClick={handleSwitchCamera} disabled={isLoading || !!error}>
+          <Button variant="default" onClick={handleSwitchCamera} disabled={isLoading || !!error}>
             Trocar Câmera
           </Button>
-          <Button onClick={handleCapture} disabled={isLoading || !!error}>
+          <Button variant="default" onClick={handleCapture} disabled={isLoading || !!error}>
             Capturar
           </Button>
         </div>

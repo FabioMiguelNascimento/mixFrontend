@@ -2,10 +2,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { CreateProductPayload, SingleProductFormValues, UpdateProductPayload, singleProductFormSchema } from "../../schema/product.schema";
-import Button from "../Button";
+import { Button } from "@/components/ui/button";
 import ImageManager, { ImageManagerInput } from "../ImageManager";
 import Modal from "../Modal";
 import { BaseProductModalProps, CommonProductFields, useProductModal } from "./BaseProductModal";
+import { Loader2 } from "lucide-react";
 
 export const MutateSingleProductModal: React.FC<BaseProductModalProps> = ({
   isOpen,
@@ -122,7 +123,8 @@ export const MutateSingleProductModal: React.FC<BaseProductModalProps> = ({
             <Button type="button" onClick={onClose} variant="secondary">
               Cancelar
             </Button>
-            <Button type="submit" loading={isLoading}>
+            <Button type="submit" disabled={isLoading}>
+              {isLoading && <Loader2 className="animate-spin" />}
               {isEditMode ? "Salvar Alterações" : "Criar Produto"}
             </Button>
           </div>
