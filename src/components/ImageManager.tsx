@@ -23,6 +23,7 @@ import { CSS } from '@dnd-kit/utilities';
 import { MdBrowseGallery } from 'react-icons/md';
 import { ProductImage } from '../types/product.types';
 import CameraModal from './CameraModal';
+import { Button } from '@/components/ui/button';
 
 interface EditableProductImage extends ProductImage {
   file?: File;
@@ -216,11 +217,11 @@ const ImageManager: React.FC<ImageManagerProps> = ({ isOpen, onClose, initialIma
             <DropdownWrapper
               options={addImageOptions}
               onSelect={handleAddImageSelect}
-              trigger={<button className="add-button"><FaPlus /> Adicionar Novas Imagens</button>}
+              trigger={<Button variant="outline"><FaPlus /> Adicionar Novas Imagens</Button>}
             />
-            <div>
-              <button onClick={onClose} className="cancel-button">Cancelar</button>
-              <button onClick={handleSave} className="save-button">Salvar</button>
+            <div className="flex gap-2">
+              <Button onClick={onClose} variant="secondary">Cancelar</Button>
+              <Button onClick={handleSave} variant="default">Salvar</Button>
             </div>
           </div>
         </div>

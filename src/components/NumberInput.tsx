@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 interface NumberInputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange' | 'value' | 'type'> {
   label: string;
@@ -23,6 +25,8 @@ const NumberInput: React.FC<NumberInputProps> = ({
   decimalSeparator = '.',
   error,
   required,
+  name,
+  id,
   ...rest
 }) => {
   const [displayValue, setDisplayValue] = useState<string>('');
@@ -136,21 +140,23 @@ const NumberInput: React.FC<NumberInputProps> = ({
     e.preventDefault();
   };
 
-  return (
+  const inputId = id || name;
 
-    <div className="form-group">
-      <label>{label}</label>
-      <input
+  return (
+    <div className="grid gap-2">
+      <Label htmlFor={inputId}>{label}</Label>
+      <Input
         {...rest}
+        id={inputId}
         type="text"
         inputMode={allowDecimals ? 'decimal' : 'numeric'}
         value={displayValue}
         onChange={handleChange}
         onBlur={handleBlur}
         onKeyDown={handleKeyDown}
-        className={error ? 'input--error' : ''}
+        aria-invalid={!!error}
       />
-      {error && <div className="error-message">{error}</div>}
+      {error && <p className="text-sm text-destructive">{error}</p>}
     </div>
   );
 };

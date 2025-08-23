@@ -1,4 +1,6 @@
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 import { useState, useRef, useEffect } from "react"
 import { IoCheckmark, IoChevronDown, IoClose, IoSearch } from "react-icons/io5"
 
@@ -146,7 +148,7 @@ export function MultiSelect({
 
   return (
     <div className="form-group">
-      <label>{label}</label>
+      <Label>{label}</Label>
       <div className={`multi-select ${className || ''} ${error ? 'multi-select--error' : ''}`} ref={dropdownRef}>
         <Button
           variant="ghost"
@@ -182,7 +184,8 @@ export function MultiSelect({
           <div className="multi-select__popover">
             <div className="multi-select__search">
               <IoSearch />
-              <input
+              <Input
+                id="multi-select-search-input"
                 placeholder={searchPlaceholder}
                 value={searchValue}
                 onChange={(e) => setSearchValue(e.target.value)}

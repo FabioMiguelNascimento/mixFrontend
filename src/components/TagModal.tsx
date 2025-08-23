@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import Modal from './Modal';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import type { Tag } from '../schema/tag.schema';
 
 interface TagModalProps {
@@ -44,20 +46,20 @@ const TagModal: React.FC<TagModalProps> = ({ isOpen, onClose, tag, onSave, onDel
       onClose={onClose}
       title={tag ? `Editar Tag: ${tag.name}` : 'Criar Nova Tag'}
     >
-      <div className="tag-modal-content">
-        <div className="form-group">
-          <label htmlFor="tagName">Nome da Tag</label>
-          <input
-            type="text"
+      <div className="grid gap-4 py-4">
+        <div className="grid grid-cols-4 items-center gap-4">
+          <Label htmlFor="tagName" className="text-right">Nome da Tag</Label>
+          <Input
             id="tagName"
             value={tagName}
             onChange={(e) => setTagName(e.target.value)}
+            className="col-span-3"
           />
         </div>
-        <div className="tag-modal-actions">
-          <Button onClick={handleSave} variant="default">Salvar</Button>
-          {tag && <Button onClick={handleDelete} variant="destructive">Excluir</Button>}
+        <div className="flex justify-end gap-2">
           <Button onClick={onClose} variant="secondary">Cancelar</Button>
+          {tag && <Button onClick={handleDelete} variant="destructive">Excluir</Button>}
+          <Button onClick={handleSave} variant="default">Salvar</Button>
         </div>
       </div>
     </Modal>

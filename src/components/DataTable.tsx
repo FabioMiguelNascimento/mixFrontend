@@ -3,6 +3,7 @@ import React from "react";
 import { MdArrowUpward, MdArrowDownward } from "react-icons/md";
 import { Button } from "@/components/ui/button";
 import Spinner from "./Spinner";
+import { Input } from "@/components/ui/input";
 
 
 interface DataTableProps<TData> {
@@ -73,7 +74,7 @@ const DataTable = <TData extends object>({
   return (
     <div className="data-table-container">
       <h1>{title}</h1>
-      <input
+      <Input
         type="text"
         value={globalFilter ?? ''}
         onChange={e => onGlobalFilterChange(e.target.value)}

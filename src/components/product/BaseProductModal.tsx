@@ -7,10 +7,11 @@ import { Product, ProductImage, SelectOption } from "../../types/product.types";
 import { getProductStatusChipProps } from "../../utils/productStatusUtils";
 import Chip from "../Chip";
 import DropdownWrapper from "../DropdownWrapper";
-import Input from "../Input";
+import { Input } from "@/components/ui/input";
 import { MultiSelect } from "../MultiSelect";
 import NumberInput from "../NumberInput";
-import Textarea from "../Textarea";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 
 
 interface BaseProductModalProps {
@@ -113,11 +114,14 @@ const CommonProductFields: React.FC<CommonProductFieldsProps> = ({
               name="name"
               control={control}
               render={({ field }) => (
-                <Input
-                  {...field}
-                  label="Nome"
-                  error={errors.name?.message}
-                />
+                <div className="grid gap-2">
+                  <Label htmlFor="name">Nome</Label>
+                  <Input
+                    {...field}
+                    id="name"
+                    error={errors.name?.message}
+                  />
+                </div>
               )}
             />
           </div>
@@ -127,12 +131,15 @@ const CommonProductFields: React.FC<CommonProductFieldsProps> = ({
                   name="sku"
                   control={control}
                   render={({ field }) => (
-                    <Input 
-                      {...field} 
-                      value={field.value || ""}
-                      label="SKU" 
-                      error={errors.sku?.message} 
-                    />
+                    <div className="grid gap-2">
+                      <Label htmlFor="sku">SKU</Label>
+                      <Input 
+                        {...field} 
+                        id="sku"
+                        value={field.value || ""}
+                        error={errors.sku?.message} 
+                      />
+                    </div>
                   )}
                 />
               </div>
@@ -142,12 +149,15 @@ const CommonProductFields: React.FC<CommonProductFieldsProps> = ({
                   name="description"
                   control={control}
                   render={({ field }) => (
-                    <Textarea
-                      {...field}
-                      value={field.value || ""}
-                      label="Descrição"
-                      error={errors.description?.message}
-                    />
+                    <div className="grid gap-2">
+                      <Label htmlFor="description">Descrição</Label>
+                      <Textarea
+                        {...field}
+                        id="description"
+                        value={field.value || ""}
+                        error={errors.description?.message}
+                      />
+                    </div>
                   )}
                 />
               </div>          <div className="form-group-row">
@@ -192,8 +202,8 @@ const CommonProductFields: React.FC<CommonProductFieldsProps> = ({
             />
             
             {showStatus && (
-              <div className="status-field">
-                <label htmlFor="">Status</label>
+              <div className="status-field grid gap-2">
+                <Label htmlFor="status">Status</Label>
                 <Controller
                   name="status"
                   control={control}
