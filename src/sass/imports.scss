@@ -3,7 +3,6 @@
 @use './functions';
 @use './main';
 
-@use './Components/form';
 @use './Components/spinner';
 @use './Components/sidebar';
 @use './Components/sidebar-link';
@@ -25,3 +24,4 @@
 @use './pages/admin-tags';
 @use './pages/admin-categories';
 @use './pages/admin-products';
+@use './pages/login';

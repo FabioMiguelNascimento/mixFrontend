@@ -1,5 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
+import { Toaster } from 'react-hot-toast'
 import App from './App.tsx'
 import { AuthProvider } from './contexts/AuthContext.tsx'
 import { ThemeProvider } from './contexts/ThemeContext.tsx'
@@ -11,6 +12,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <AuthProvider>
       <ThemeProvider>
         <App />
+        <Toaster />
       </ThemeProvider>
     </AuthProvider>
   </React.StrictMode>,
