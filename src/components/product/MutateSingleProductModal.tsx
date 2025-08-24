@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { CreateProductPayload, SingleProductFormValues, UpdateProductPayload, singleProductFormSchema } from "../../schema/product.schema";
 import { Button } from "@/components/ui/button";
 import ImageManager, { ImageManagerInput } from "../ImageManager";
-import Modal from "../Modal";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { BaseProductModalProps, CommonProductFields, useProductModal } from "./BaseProductModal";
 import { Loader2 } from "lucide-react";
 
@@ -92,51 +92,52 @@ export const MutateSingleProductModal: React.FC<BaseProductModalProps> = ({
   };
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={onClose}
-      title={isEditMode ? "Editar Produto" : "Criar Novo Produto"}
-    >
-      <div className="product-modal">
-        <form onSubmit={handleSubmit(handleFormSubmit)}>
-          <div className="product-modal-section">
-            <h3>Imagens</h3>
-            <div className="form-group-full-width">
-              <ImageManagerInput
-                images={modalState.images}
-                onOpenManager={() => modalState.setIsImageManagerOpen(true)}
-              />
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>{isEditMode ? "Editar Produto" : "Criar Novo Produto"}</DialogTitle>
+        </DialogHeader>
+        <div className="product-modal">
+          <form onSubmit={handleSubmit(handleFormSubmit)}>
+            <div className="product-modal-section">
+              <h3>Imagens</h3>
+              <div className="form-group-full-width">
+                <ImageManagerInput
+                  images={modalState.images}
+                  onOpenManager={() => modalState.setIsImageManagerOpen(true)}
+                />
+              </div>
             </div>
-          </div>
 
-          <CommonProductFields
-            control={control}
-            errors={errors}
-            watch={watch}
-            categoryOptions={modalState.categoryOptions}
-            tagOptions={modalState.tagOptions}
-            statusOptions={modalState.statusOptions}
-            showStatus={true}
+            <CommonProductFields
+              control={control}
+              errors={errors}
+              watch={watch}
+              categoryOptions={modalState.categoryOptions}
+              tagOptions={modalState.tagOptions}
+              statusOptions={modalState.statusOptions}
+              showStatus={true}
+            />
+
+            <DialogFooter className="flex justify-end gap-2">
+              <Button type="button" onClick={onClose} variant="secondary">
+                Cancelar
+              </Button>
+              <Button type="submit" disabled={isLoading}>
+                {isLoading && <Loader2 className="animate-spin" />}
+                {isEditMode ? "Salvar Alterações" : "Criar Produto"}
+              </Button>
+            </DialogFooter>
+          </form>
+
+          <ImageManager
+            isOpen={modalState.isImageManagerOpen}
+            onClose={() => modalState.setIsImageManagerOpen(false)}
+            initialImages={modalState.images}
+            onSave={modalState.setImages}
           />
-
-          <div className="product-modal-actions">
-            <Button type="button" onClick={onClose} variant="secondary">
-              Cancelar
-            </Button>
-            <Button type="submit" disabled={isLoading}>
-              {isLoading && <Loader2 className="animate-spin" />}
-              {isEditMode ? "Salvar Alterações" : "Criar Produto"}
-            </Button>
-          </div>
-        </form>
-
-        <ImageManager
-          isOpen={modalState.isImageManagerOpen}
-          onClose={() => modalState.setIsImageManagerOpen(false)}
-          initialImages={modalState.images}
-          onSave={modalState.setImages}
-        />
-      </div>
-    </Modal>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 };

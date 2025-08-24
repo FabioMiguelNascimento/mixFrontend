@@ -1,8 +1,9 @@
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import React, { useEffect, useRef, useState } from 'react';
 import { FaCamera, FaFolderOpen, FaGoogleDrive, FaPlus, FaStar, FaTrash } from 'react-icons/fa';
 import DropdownWrapper from './DropdownWrapper';
-import Modal from './Modal';
 
+import { Button } from '@/components/ui/button';
 import {
   closestCenter,
   DndContext,
@@ -23,7 +24,6 @@ import { CSS } from '@dnd-kit/utilities';
 import { MdBrowseGallery } from 'react-icons/md';
 import { ProductImage } from '../types/product.types';
 import CameraModal from './CameraModal';
-import { Button } from '@/components/ui/button';
 
 interface EditableProductImage extends ProductImage {
   file?: File;
@@ -173,68 +173,73 @@ const ImageManager: React.FC<ImageManagerProps> = ({ isOpen, onClose, initialIma
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Gerenciar Imagens do Produto">
-      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-        <div className="image-manager">
-          <div className="image-manager-main">
-            <div className="image-manager-preview">
-              {selectedImage ? (
-                <img src={selectedImage.url} alt='Preview' />
-              ) : (
-                <div className="no-preview">
-                  <FaCamera />
-                  <span>Nenhuma imagem selecionada</span>
-                </div>
-              )}
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Gerenciar Imagens do Produto</DialogTitle>
+        </DialogHeader>
+        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+          <div className="image-manager">
+            <div className="image-manager-main">
+              <div className="image-manager-preview">
+                {selectedImage ? (
+                  <img src={selectedImage.url} alt='Preview' />
+                ) : (
+                  <div className="no-preview">
+                    <FaCamera />
+                    <span>Nenhuma imagem selecionada</span>
+                  </div>
+                )}
+              </div>
+              <div className="image-manager-gallery">
+                <SortableContext items={managedImages.map(img => img.id)} strategy={rectSortingStrategy}>
+                  <div className="gallery-grid">
+                    {managedImages.map((image) => (
+                      <SortableImage
+                        key={image.id}
+                        image={image}
+                        onSelect={() => setSelectedImage(image)}
+                        onDelete={() => handleDelete(image)}
+                        onSetPrimary={() => handleSetPrimary(image)}
+                        isSelected={selectedImage?.id === image.id}
+                        isPrimary={managedImages.length > 0 && managedImages[0].id === image.id}
+                      />
+                    ))}
+                  </div>
+                </SortableContext>
+              </div>
             </div>
-            <div className="image-manager-gallery">
-              <SortableContext items={managedImages.map(img => img.id)} strategy={rectSortingStrategy}>
-                <div className="gallery-grid">
-                  {managedImages.map((image) => (
-                    <SortableImage
-                      key={image.id}
-                      image={image}
-                      onSelect={() => setSelectedImage(image)}
-                      onDelete={() => handleDelete(image)}
-                      onSetPrimary={() => handleSetPrimary(image)}
-                      isSelected={selectedImage?.id === image.id}
-                      isPrimary={managedImages.length > 0 && managedImages[0].id === image.id}
-                    />
-                  ))}
-                </div>
-              </SortableContext>
+            <div className="image-manager-actions">
+              <input
+                type="file"
+                multiple
+                ref={fileInputRef}
+                onChange={handleFileChange}
+                style={{ display: 'none' }}
+                accept="image/png, image/jpeg, image/webp"
+              />
+              <DropdownWrapper
+                options={addImageOptions}
+                onSelect={handleAddImageSelect}
+                trigger={<Button variant="outline"><FaPlus /> Adicionar Novas Imagens</Button>}
+              />
+              <div className="flex gap-2">
+                <Button onClick={onClose} variant="secondary">Cancelar</Button>
+                <Button onClick={handleSave} variant="default">Salvar</Button>
+              </div>
             </div>
           </div>
-          <div className="image-manager-actions">
-            <input
-              type="file"
-              multiple
-              ref={fileInputRef}
-              onChange={handleFileChange}
-              style={{ display: 'none' }}
-              accept="image/png, image/jpeg, image/webp"
-            />
-            <DropdownWrapper
-              options={addImageOptions}
-              onSelect={handleAddImageSelect}
-              trigger={<Button variant="outline"><FaPlus /> Adicionar Novas Imagens</Button>}
-            />
-            <div className="flex gap-2">
-              <Button onClick={onClose} variant="secondary">Cancelar</Button>
-              <Button onClick={handleSave} variant="default">Salvar</Button>
-            </div>
-          </div>
-        </div>
-      </DndContext>
+        </DndContext>
 
-      { isCameraModalOpen && 
-        <CameraModal 
-          isOpen={isCameraModalOpen}
-          onCapture={handleCameraCapture}
-          onClose={() => setCameraModalOpen(false)}
-        />
-      }
-    </Modal>
+        {isCameraModalOpen && 
+          <CameraModal 
+            isOpen={isCameraModalOpen}
+            onCapture={handleCameraCapture}
+            onClose={() => setCameraModalOpen(false)}
+          />
+        }
+      </DialogContent>
+    </Dialog>
   );
 };
 

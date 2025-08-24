@@ -1,15 +1,14 @@
-import React, { useEffect, useState } from 'react';
 import { createColumnHelper } from '@tanstack/react-table';
 import { format } from 'date-fns';
+import React, { useEffect, useState } from 'react';
 
-import { useOrders } from '../hooks/useOrders';
-import Modal from '../components/Modal';
+import Chip from '../components/Chip';
+import DataTable from '../components/DataTable.tsx';
 import OrderDetailsModal from '../components/OrderDetailsModal';
+import { useOrders } from '../hooks/useOrders';
 import type { Order } from '../schema/order.schema';
 import { OrderStatus } from '../schema/order.schema';
 import { getStatusChipProps } from '../utils/orderStatusUtils.tsx';
-import Chip from '../components/Chip';
-import DataTable from '../components/DataTable.tsx';
 
 const AdminOrders: React.FC = () => {
   const [globalFilter, setGlobalFilter] = React.useState('');
@@ -103,18 +102,12 @@ const AdminOrders: React.FC = () => {
         }}
       />
 
-      <Modal
+      <OrderDetailsModal
+        order={selectedOrder}
+        onOrderUpdated={handleRefetch}
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        title={selectedOrder ? (
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
-            <span>Pedido #{selectedOrder.id.substring(0, 8)} - {selectedOrder.customerName} (R$ {selectedOrder.totalAmount.toFixed(2)})</span>
-          </div>
-        ) : 'Detalhes do Pedido'}
-        zIndex={1000}
-      >
-        <OrderDetailsModal order={selectedOrder} onOrderUpdated={handleRefetch} />
-      </Modal>
+      />
     </div>
   );
 };

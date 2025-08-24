@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import Modal from './Modal';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -41,28 +41,29 @@ const CategoryModal: React.FC<CategoryModalProps> = ({ isOpen, onClose, category
   };
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={onClose}
-      title={category ? `Editar Categoria: ${category.name}` : 'Criar Nova Categoria'}
-    >
-      <div className="grid gap-4 py-4">
-        <div className="grid grid-cols-4 items-center gap-4">
-          <Label htmlFor="categoryName" className="text-right">Nome da Categoria</Label>
-          <Input
-            id="categoryName"
-            value={categoryName}
-            onChange={(e) => setCategoryName(e.target.value)}
-            className="col-span-3"
-          />
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>{category ? `Editar Categoria: ${category.name}` : 'Criar Nova Categoria'}</DialogTitle>
+        </DialogHeader>
+        <div className="grid gap-4 py-4">
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="categoryName" className="text-right">Nome da Categoria</Label>
+            <Input
+              id="categoryName"
+              value={categoryName}
+              onChange={(e) => setCategoryName(e.target.value)}
+              className="col-span-3"
+            />
+          </div>
         </div>
-        <div className="flex justify-end gap-2">
+        <DialogFooter className="flex justify-end gap-2">
           <Button onClick={onClose} variant="secondary">Cancelar</Button>
           {category && <Button onClick={handleDelete} variant="destructive">Excluir</Button>}
           <Button onClick={handleSave} variant="default">Salvar</Button>
-        </div>
-      </div>
-    </Modal>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 };
 

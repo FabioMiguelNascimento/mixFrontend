@@ -1,6 +1,13 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import Modal from './Modal'; // Import the generic Modal component
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from '@/components/ui/dialog';
 
 interface ConfirmationModalProps {
   isOpen: boolean;
@@ -18,18 +25,18 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   message,
 }) => {
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={onClose}
-      title={title}
-      zIndex={1001} // Higher z-index for confirmation modal
-    >
-      <p>{message}</p>
-      <div className="confirmation-modal-actions">
-        <Button variant="secondary" onClick={onClose}>Cancelar</Button>
-        <Button variant="default" onClick={onConfirm}>Confirmar</Button>
-      </div>
-    </Modal>
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>{title}</DialogTitle>
+          <DialogDescription>{message}</DialogDescription>
+        </DialogHeader>
+        <DialogFooter className="flex justify-end gap-2">
+          <Button variant="secondary" onClick={onClose}>Cancelar</Button>
+          <Button variant="default" onClick={onConfirm}>Confirmar</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 };
 

@@ -6,7 +6,7 @@ import { basketProductFormSchema, BasketProductFormValues, CreateProductPayload,
 import { SelectOption } from "../../types/product.types";
 import { Button } from "@/components/ui/button";
 import ImageManager, { ImageManagerInput } from "../ImageManager";
-import Modal from "../Modal";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { MultiSelect } from "../MultiSelect";
 import NumberInput from "../NumberInput";
 import { BaseProductModalProps, CommonProductFields, useProductModal } from "./BaseProductModal";
@@ -185,62 +185,63 @@ export const MutateBasketProductModal: React.FC<BaseProductModalProps> = ({
   };
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={onClose}
-      title={isEditMode ? "Editar Cesta" : "Criar Nova Cesta"}
-    >
-      <div className="product-modal">
-        <form onSubmit={handleSubmit(handleFormSubmit)}>
-          <div className="product-modal-section">
-            <h3>Imagens</h3>
-            <div className="form-group-full-width">
-              <ImageManagerInput
-                images={modalState.images}
-                onOpenManager={() => modalState.setIsImageManagerOpen(true)}
-              />
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>{isEditMode ? "Editar Cesta" : "Criar Nova Cesta"}</DialogTitle>
+        </DialogHeader>
+        <div className="product-modal">
+          <form onSubmit={handleSubmit(handleFormSubmit)}>
+            <div className="product-modal-section">
+              <h3>Imagens</h3>
+              <div className="form-group-full-width">
+                <ImageManagerInput
+                  images={modalState.images}
+                  onOpenManager={() => modalState.setIsImageManagerOpen(true)}
+                />
+              </div>
             </div>
-          </div>
 
-          <CommonProductFields
-            control={control}
-            errors={errors}
-            watch={watch}
-            categoryOptions={modalState.categoryOptions}
-            tagOptions={modalState.tagOptions}
-            statusOptions={modalState.statusOptions}
-            showStatus={true}
+            <CommonProductFields
+              control={control}
+              errors={errors}
+              watch={watch}
+              categoryOptions={modalState.categoryOptions}
+              tagOptions={modalState.tagOptions}
+              statusOptions={modalState.statusOptions}
+              showStatus={true}
+            />
+
+            <div className="product-modal-section">
+              <h3>Itens da Cesta</h3>
+              <div className="form-group-full-width">
+                <BasketItemsManager
+                  basketItems={basketItems}
+                  onChange={(items) => setValue("basketItems", items)}
+                  error={errors.basketItems?.message}
+                />
+              </div>
+            </div>
+
+            <DialogFooter className="flex justify-end gap-2">
+              <Button type="button" onClick={onClose} variant="secondary">
+                Cancelar
+              </Button>
+              <Button type="submit" disabled={isLoading}>
+                {isLoading && <Loader2 className="animate-spin" />}
+                {isEditMode ? "Salvar Alterações" : "Criar Cesta"}
+              </Button>
+            </DialogFooter>
+          </form>
+
+          <ImageManager
+            isOpen={modalState.isImageManagerOpen}
+            onClose={() => modalState.setIsImageManagerOpen(false)}
+            initialImages={modalState.images}
+            onSave={modalState.setImages}
           />
-
-          <div className="product-modal-section">
-            <h3>Itens da Cesta</h3>
-            <div className="form-group-full-width">
-              <BasketItemsManager
-                basketItems={basketItems}
-                onChange={(items) => setValue("basketItems", items)}
-                error={errors.basketItems?.message}
-              />
-            </div>
-          </div>
-
-          <div className="product-modal-actions">
-            <Button type="button" onClick={onClose} variant="secondary">
-              Cancelar
-            </Button>
-            <Button type="submit" disabled={isLoading}>
-              {isLoading && <Loader2 className="animate-spin" />}
-              {isEditMode ? "Salvar Alterações" : "Criar Cesta"}
-            </Button>
-          </div>
-        </form>
-
-        <ImageManager
-          isOpen={modalState.isImageManagerOpen}
-          onClose={() => modalState.setIsImageManagerOpen(false)}
-          initialImages={modalState.images}
-          onSave={modalState.setImages}
-        />
-      </div>
-    </Modal>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 };

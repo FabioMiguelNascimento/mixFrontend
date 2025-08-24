@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import Modal from './Modal';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -41,28 +41,29 @@ const TagModal: React.FC<TagModalProps> = ({ isOpen, onClose, tag, onSave, onDel
   };
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={onClose}
-      title={tag ? `Editar Tag: ${tag.name}` : 'Criar Nova Tag'}
-    >
-      <div className="grid gap-4 py-4">
-        <div className="grid grid-cols-4 items-center gap-4">
-          <Label htmlFor="tagName" className="text-right">Nome da Tag</Label>
-          <Input
-            id="tagName"
-            value={tagName}
-            onChange={(e) => setTagName(e.target.value)}
-            className="col-span-3"
-          />
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>{tag ? `Editar Tag: ${tag.name}` : 'Criar Nova Tag'}</DialogTitle>
+        </DialogHeader>
+        <div className="grid gap-4 py-4">
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="tagName" className="text-right">Nome da Tag</Label>
+            <Input
+              id="tagName"
+              value={tagName}
+              onChange={(e) => setTagName(e.target.value)}
+              className="col-span-3"
+            />
+          </div>
+          <div className="flex justify-end gap-2">
+            <Button onClick={onClose} variant="secondary">Cancelar</Button>
+            {tag && <Button onClick={handleDelete} variant="destructive">Excluir</Button>}
+            <Button onClick={handleSave} variant="default">Salvar</Button>
+          </div>
         </div>
-        <div className="flex justify-end gap-2">
-          <Button onClick={onClose} variant="secondary">Cancelar</Button>
-          {tag && <Button onClick={handleDelete} variant="destructive">Excluir</Button>}
-          <Button onClick={handleSave} variant="default">Salvar</Button>
-        </div>
-      </div>
-    </Modal>
+      </DialogContent>
+    </Dialog>
   );
 };
 

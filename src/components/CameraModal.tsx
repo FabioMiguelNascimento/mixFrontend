@@ -1,6 +1,6 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import Modal from './Modal';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 interface CameraModalProps {
   isOpen: boolean;
@@ -137,34 +137,42 @@ const CameraModal: React.FC<CameraModalProps> = ({ isOpen, onClose, onCapture })
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={handleClose} title="Tirar Foto">
-      <div className="camera-modal">
-        {error ? (
-          <div className="camera-error">
-            <p>Erro ao acessar a câmera: {error}</p>
-            <Button variant="default" onClick={startCamera}>Tentar Novamente</Button>
+    <Dialog open={isOpen}>
+      <DialogContent showCloseButton={false}>
+        <DialogHeader>
+          <DialogTitle>Tirar Foto</DialogTitle>
+        </DialogHeader>
+        <div className="camera-modal">
+          {error ? (
+            <div className="camera-error">
+              <p>Erro ao acessar a câmera: {error}</p>
+              <Button variant="default" onClick={startCamera}>Tentar Novamente</Button>
+            </div>
+          ) : (
+            <>
+              <video ref={videoRef} autoPlay playsInline className="camera-feed" />
+              {isLoading && (
+                <div className="camera-loading">
+                  <p>Carregando câmera...</p>
+                </div>
+              )}
+            </>
+          )}
+          <canvas ref={canvasRef} style={{ display: 'none' }} />
+          <div className="camera-controls">
+            <Button variant="secondary" onClick={handleClose}>
+              Cancelar
+            </Button>
+            <Button variant="outline" onClick={handleSwitchCamera} disabled={isLoading || !!error}>
+              Trocar Câmera
+            </Button>
+            <Button variant="default" onClick={handleCapture} disabled={isLoading || !!error}>
+              Capturar
+            </Button>
           </div>
-        ) : (
-          <>
-            <video ref={videoRef} autoPlay playsInline className="camera-feed" />
-            {isLoading && (
-              <div className="camera-loading">
-                <p>Carregando câmera...</p>
-              </div>
-            )}
-          </>
-        )}
-        <canvas ref={canvasRef} style={{ display: 'none' }} />
-        <div className="camera-controls">
-          <Button variant="default" onClick={handleSwitchCamera} disabled={isLoading || !!error}>
-            Trocar Câmera
-          </Button>
-          <Button variant="default" onClick={handleCapture} disabled={isLoading || !!error}>
-            Capturar
-          </Button>
         </div>
-      </div>
-    </Modal>
+      </DialogContent>
+    </Dialog>
   );
 };
 

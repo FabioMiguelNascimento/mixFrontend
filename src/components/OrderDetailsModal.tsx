@@ -6,24 +6,31 @@ import DropdownWrapper from './DropdownWrapper';
 import ConfirmationModal from './ConfirmationModal';
 import { useUpdateOrderStatus } from '../hooks/useUpdateOrderStatus';
 import { getStatusChipProps } from '../utils/orderStatusUtils.tsx';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { DialogDescription } from '@radix-ui/react-dialog';
 
 interface OrderDetailsModalProps {
   order: Order | null;
   onOrderUpdated?: () => void;
+  isOpen: boolean;
+  onClose: () => void;
 }
 
-const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ order, onOrderUpdated }) => {
-  if (!order) {
-    return <p>Nenhum pedido selecionado.</p>;
-  }
-
-  const [currentStatus, setCurrentStatus] = useState<OrderStatus>(order.status);
+const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({
+  order,
+  onOrderUpdated,
+  isOpen,
+  onClose,
+}) => {
+  const [currentStatus, setCurrentStatus] = useState<OrderStatus>(order?.status || OrderStatus.PENDING);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [pendingStatus, setPendingStatus] = useState<OrderStatus | null>(null);
   const { updateStatus, loading, error } = useUpdateOrderStatus();
 
   useEffect(() => {
+    if (order) {
       setCurrentStatus(order.status);
+    }
   }, [order]);
 
   const statusOptions = Object.values(OrderStatus).map(status => ({
@@ -59,70 +66,85 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ order, onOrderUpd
     setIsConfirmModalOpen(true);
   };
 
+  if (!order) {
+    return null;
+  }
+
   return (
-    <div className="order-details-modal">
-      <div className="order-details-card">
-        <div className="order-details-section">
-          <h3>Informações Adicionais</h3>
-          <p><strong>Contato:</strong> {order.customerContact}</p>
-          {order.customerNotes && <p><strong>Observações:</strong> {order.customerNotes}</p>}
-          <p><strong>Criado em:</strong> {format(new Date(order.createdAt), 'dd/MM/yyyy HH:mm:ss')}</p>
-          <p><strong>Status:</strong>
-            <DropdownWrapper
-              trigger={
-                <Chip
-                  text={loading ? 'Atualizando...' : getStatusChipProps(currentStatus).text}
-                  variant={getStatusChipProps(currentStatus).variant}
-                  icon={getStatusChipProps(currentStatus).icon}
-                  style={{ cursor: loading ? 'wait' : 'pointer' }}
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+              <span>Pedido #{order.id.substring(0, 8)} - {order.customerName} (R$ {order.totalAmount.toFixed(2)})</span>
+            </div>
+          </DialogTitle>
+        </DialogHeader>
+        <div className="order-details-modal">
+          <div className="order-details-card">
+            <div className="order-details-section">
+              <h3>Informações Adicionais</h3>
+              <p><strong>Contato:</strong> {order.customerContact}</p>
+              {order.customerNotes && <p><strong>Observações:</strong> {order.customerNotes}</p>}
+              <p><strong>Criado em:</strong> {format(new Date(order.createdAt), 'dd/MM/yyyy HH:mm:ss')}</p>
+              <p><strong>Status:</strong>
+                <DropdownWrapper
+                  trigger={
+                    <Chip
+                      text={loading ? 'Atualizando...' : getStatusChipProps(currentStatus).text}
+                      variant={getStatusChipProps(currentStatus).variant}
+                      icon={getStatusChipProps(currentStatus).icon}
+                      style={{ cursor: loading ? 'wait' : 'pointer' }}
+                    />
+                  }
+                  options={statusOptions}
+                  onSelect={handleStatusChange}
                 />
-              }
-              options={statusOptions}
-              onSelect={handleStatusChange}
-            />
-            {error && <span style={{ color: 'red' }}>Erro: {error.message}</span>}
-          </p>
-        </div>
-      </div>
+                {error && <span style={{ color: 'red' }}>Erro: {error.message}</span>}
+              </p>
+            </div>
+          </div>
 
-      <div className="order-details-card">
-        <div className="order-details-section">
-          <h3>Itens do Pedido</h3>
-          {order.orderItems && order.orderItems.length > 0 ? (
-            <table className="order-items-table">
-              <thead>
-                <tr>
-                  <th>Produto</th>
-                  <th>Qtd</th>
-                  <th>Preço Unit.</th>
-                  <th>Total</th>
-                </tr>
-              </thead>
-              <tbody>
-                {order.orderItems.map((item) => (
-                  <tr key={item.productId}>
-                    <td>{item.product.name}</td>
-                    <td>{item.quantity}</td>
-                    <td>R$ {item.price.toFixed(2)}</td>
-                    <td>R$ {(item.quantity * item.price).toFixed(2)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          ) : (
-            <p>Nenhum item no pedido.</p>
-          )}
-        </div>
-      </div>
+          <div className="order-details-card">
+            <div className="order-details-section">
+              <h3>Itens do Pedido</h3>
+              {order.orderItems && order.orderItems.length > 0 ? (
+                <table className="order-items-table">
+                  <thead>
+                    <tr>
+                      <th>Produto</th>
+                      <th>Qtd</th>
+                      <th>Preço Unit.</th>
+                      <th>Total</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {order.orderItems.map((item) => (
+                      <tr key={item.productId}>
+                        <td>{item.product.name}</td>
+                        <td>{item.quantity}</td>
+                        <td>R$ {item.price.toFixed(2)}</td>
+                        <td>R$ {(item.quantity * item.price).toFixed(2)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              ) : (
+                <p>Nenhum item no pedido.</p>
+              )}
+            </div>
+          </div>
 
-      <ConfirmationModal
-        isOpen={isConfirmModalOpen}
-        onClose={cancelStatusChange}
-        onConfirm={confirmStatusChange}
-        title="Confirmar Alteração de Status"
-        message={`Tem certeza que deseja alterar o status do pedido para '${pendingStatus ? statusOptions.find(opt => opt.value === pendingStatus)?.label : ''}'?`}
-      />
-    </div>
+          <ConfirmationModal
+            isOpen={isConfirmModalOpen}
+            onClose={cancelStatusChange}
+            onConfirm={confirmStatusChange}
+            title="Confirmar Alteração de Status"
+            message={`Tem certeza que deseja alterar o status do pedido para '${pendingStatus ? statusOptions.find(opt => opt.value === pendingStatus)?.label : ''}'?`}
+          />
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 };
 
